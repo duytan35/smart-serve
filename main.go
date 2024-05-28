@@ -17,6 +17,7 @@ func main() {
 	}
 
 	models.ConnectDB()
+	models.Migrate()
 
 	r := gin.Default()
 

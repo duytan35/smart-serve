@@ -23,3 +23,8 @@ func ConnectDB() {
 		fmt.Println("Connected to database")
 	}
 }
+
+func Migrate() {
+	fmt.Println("Migrating the schema...")
+	DB.AutoMigrate(&User{})
+}
