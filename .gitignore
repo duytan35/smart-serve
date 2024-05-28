@@ -1,0 +1,64 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Output of the go coverage tool
+*.cover
+
+# Dependency directories (vendor/)
+vendor/
+
+# Go workspace files
+go.work
+go.work.sum
+
+# Go module files
+go.sum
+
+# IDE specific files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# MacOS generated files
+.DS_Store
+
+# Windows thumbnail cache files
+Thumbs.db
+
+# Air configuration file
+.air.toml
+
+# Temporary files
+tmp/
+*.tmp
+
+# Logs and debug files
+*.log
+logs/
+
+# Build directories
+build/
+bin/
+
+# Environment variable files
+.env
+.env.*
+
+# Node modules if using Node.js for frontend
+node_modules/
+
+# Test and coverage output
+*.test
+*.out
+*.cover
+
+# Editor backup files
+*~
