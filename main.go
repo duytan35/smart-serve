@@ -10,6 +10,13 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// @title Smart Serve
+// @description Smart Serve API
+// @version 1.0
+// @host localhost:5000
+// @schemes http https
+// @BasePath /api/v1
+
 func main() {
 	err := godotenv.Load()
 	if err != nil {
@@ -17,6 +24,7 @@ func main() {
 	}
 
 	models.ConnectDB()
+	models.Migrate()
 
 	r := gin.Default()
 

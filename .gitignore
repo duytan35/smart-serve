@@ -33,9 +33,6 @@ go.sum
 # Windows thumbnail cache files
 Thumbs.db
 
-# Air configuration file
-.air.toml
-
 # Temporary files
 tmp/
 *.tmp
