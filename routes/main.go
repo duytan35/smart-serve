@@ -1,15 +1,21 @@
 package routes
 
 import (
-	"smart-serve/controllers"
+	"net/http"
+	_ "smart-serve/docs"
 
 	"github.com/gin-gonic/gin"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func Config(r *gin.Engine) {
-	r.GET("/users", controllers.GetUsers)
-	r.POST("/users", controllers.CreateUser)
-	r.GET("/users/:id", controllers.GetUser)
-	r.PUT("/users/:id", controllers.UpdateUser)
-	r.DELETE("/users/:id", controllers.DeleteUser)
+	v1 := r.Group("/api/v1")
+	{
+		addUserRoutes(v1)
+	}
+
+	v1.GET("/docs", func(c *gin.Context) { c.Redirect(http.StatusFound, "./docs/index.html") })
+	v1.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }
