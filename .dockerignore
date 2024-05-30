@@ -1,0 +1,47 @@
+# Binaries
+
+main
+_.exe
+_.exe~
+_.dll
+_.so
+\*.dylib
+
+# Output directories
+
+bin/
+out/
+
+# Temporary files
+
+_.log
+_.tmp
+_.swp
+_.swo
+\*.DS_Store
+
+# Dependency directories
+
+vendor/
+
+# Go module cache
+
+pkg/
+\*.mod
+
+# IDE/editor config files
+
+.vscode/
+.idea/
+\*.iml
+
+# Git-related files
+
+.git
+.gitignore
+
+# Docker-related files
+
+Dockerfile
+docker-compose.yml
+.dockerignore
