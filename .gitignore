@@ -47,7 +47,6 @@ bin/
 
 # Environment variable files
 .env
-.env.*
 
 # Node modules if using Node.js for frontend
 node_modules/
