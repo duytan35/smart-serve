@@ -20,11 +20,8 @@ RUN go build -o main .
 FROM alpine:latest
 
 # Set environment variables
-ARG PORT
 ENV PORT=$PORT
-ARG DB_DSN
 ENV DB_DSN=$DB_DSN
-ARG MODE
 ENV MODE=$MODE
 
 # Copy the pre-built binary file from the previous stage
