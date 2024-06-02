@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"smart-serve/models"
 
 	"net/http"
@@ -9,6 +10,35 @@ import (
 )
 
 // can use id is string or int
+
+// @Tags Users
+// @Accept  json
+// @Produce  json
+// @Param data body models.CreateUserInput true "User Data"
+// @Success 200 {object} models.User
+// @Failure 400 {object} models.ErrorResponse
+// @Router /users [post]
+func CreateUser(c *gin.Context) {
+	var user models.User
+
+	fmt.Println("!2312312")
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	fmt.Println("!2312312")
+	fmt.Println(user)
+
+	user, err := models.CreateUser(user)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
+}
 
 // @Tags Users
 // @Accept  json
@@ -23,26 +53,6 @@ func GetUsers(c *gin.Context) {
 // @Tags Users
 // @Accept  json
 // @Produce  json
-// @Param data body models.CreateUserInput true "User Data"
-// @Success 200 {object} models.User
-// @Failure 400 {object} models.ErrorResponse
-// @Router /users [post]
-func CreateUser(c *gin.Context) {
-	var user models.User
-
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	user = models.CreateUser(user)
-
-	c.JSON(http.StatusOK, user)
-}
-
-// @Tags Users
-// @Accept  json
-// @Produce  json
 // @Param id path string true "User ID"
 // @Success 200 {object} models.User
 // @Failure 404 {object} models.ErrorResponse
@@ -52,7 +62,7 @@ func GetUser(c *gin.Context) {
 
 	user, err := models.GetUser(id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, user)
@@ -72,13 +82,13 @@ func UpdateUser(c *gin.Context) {
 	var user models.UpdateUserInput
 
 	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
 	updatedUser, err := models.UpdateUser(id, user)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -95,8 +105,8 @@ func UpdateUser(c *gin.Context) {
 func DeleteUser(c *gin.Context) {
 	id := c.Param("id")
 	if err := models.DeleteUser(id); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "user deleted successfully"})
 }

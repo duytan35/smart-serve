@@ -1,22 +1,73 @@
 basePath: /api/v1
 definitions:
+  models.CreateRestaurantInput:
+    properties:
+      email:
+        example: example@gmail.com
+        type: string
+      name:
+        example: Example Restaurant
+        type: string
+      phone:
+        example: "1234567890"
+        type: string
+    required:
+    - email
+    - name
+    - phone
+    type: object
   models.CreateUserInput:
+    properties:
+      email:
+        example: restaurant@gmail.com
+        type: string
+      name:
+        example: Nguyen Van A
+        type: string
+      password:
+        example: "12345678"
+        minLength: 8
+        type: string
+      restaurantId:
+        description: Foreign key
+        type: integer
+    required:
+    - email
+    - name
+    - password
+    - restaurantId
+    type: object
+  models.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  models.Restaurant:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      phone:
+        type: string
+      users:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+    required:
+    - email
+    - name
+    - phone
+    type: object
+  models.UpdateRestaurantInput:
     properties:
       email:
         type: string
       name:
         type: string
-      password:
-        minLength: 8
-        type: string
-    required:
-    - email
-    - name
-    - password
-    type: object
-  models.ErrorResponse:
-    properties:
-      error:
+      phone:
         type: string
     type: object
   models.UpdateUserInput:
@@ -38,8 +89,10 @@ definitions:
       name:
         type: string
       password:
-        minLength: 8
         type: string
+      restaurantId:
+        description: Foreign key
+        type: integer
     required:
     - email
     - name
@@ -52,6 +105,123 @@ info:
   title: Smart Serve
   version: "1.0"
 paths:
+  /restaurants:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Restaurant'
+            type: array
+      tags:
+      - Restaurants
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Restaurant Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateRestaurantInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Restaurant'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      tags:
+      - Restaurants
+  /restaurants/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Restaurant ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      tags:
+      - Restaurants
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Restaurant ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Restaurant'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      tags:
+      - Restaurants
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Restaurant ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Restaurant Data
+        in: body
+        name: restaurant
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateRestaurantInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Restaurant'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      tags:
+      - Restaurants
   /users:
     get:
       consumes:

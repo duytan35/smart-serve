@@ -12,9 +12,9 @@ import (
 
 func Config(r *gin.Engine) {
 	v1 := r.Group("/api/v1")
-	{
-		addUserRoutes(v1)
-	}
+
+	addUserRoutes(v1)
+	addRestaurantRoutes(v1)
 
 	v1.GET("/docs", func(c *gin.Context) { c.Redirect(http.StatusFound, "./docs/index.html") })
 	v1.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
