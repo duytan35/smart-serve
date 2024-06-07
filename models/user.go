@@ -1,8 +1,10 @@
 package models
 
+import "golang.org/x/crypto/bcrypt"
+
 type CreateUserInput struct {
 	Name         string `json:"name" binding:"required" example:"Nguyen Van A"`
-	Email        string `json:"email" binding:"required,email" example:"restaurant@gmail.com"`
+	Email        string `json:"email" binding:"required,email" example:"user@gmail.com"`
 	Password     string `json:"password" binding:"required,min=8" example:"12345678"`
 	RestaurantID uint   `json:"restaurantId" binding:"required"` // Foreign key
 }
@@ -27,15 +29,24 @@ func CreateUser(user User) (User, error) {
 	return user, nil
 }
 
-func UpdateUser(id string, user UpdateUserInput) (User, error) {
-	var updatedUser User
-	if err := DB.First(&updatedUser, id).Error; err != nil {
+func UpdateUser(id string, updatedUser UpdateUserInput) (User, error) {
+	var user User
+	if err := DB.First(&user, id).Error; err != nil {
 		return User{}, err
 	}
-	if err := DB.Model(&updatedUser).Updates(user).Error; err != nil {
+
+	if updatedUser.Password != "" {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(updatedUser.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return User{}, err
+		}
+		updatedUser.Password = string(hashedPassword)
+	}
+
+	if err := DB.Model(&user).Updates(updatedUser).Error; err != nil {
 		return User{}, err
 	}
-	return updatedUser, nil
+	return user, nil
 }
 
 func GetUser(id string) (User, error) {

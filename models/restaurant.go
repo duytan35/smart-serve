@@ -1,15 +1,17 @@
 package models
 
 type CreateRestaurantInput struct {
-	Name  string `json:"name" binding:"required" example:"Example Restaurant"`
-	Phone string `json:"phone" binding:"required,phone" example:"1234567890"`
-	Email string `json:"email" binding:"required,email" example:"example@gmail.com"`
+	Name    string `json:"name" binding:"required" example:"Example Restaurant"`
+	Phone   string `json:"phone" binding:"required,phone" example:"1234567890"`
+	Email   string `json:"email" binding:"required,email" example:"example@gmail.com"`
+	Address string `json:"address" binding:"required" example:"36 Pasteur, Ben Nghe, Quan 1, Ho Chi Minh City"`
 }
 
 type UpdateRestaurantInput struct {
-	Name  string `json:"name" binding:"omitempty"`
-	Phone string `json:"phone" binding:"omitempty"`
-	Email string `json:"email" binding:"omitempty,email"`
+	Name    string `json:"name" binding:"omitempty"`
+	Phone   string `json:"phone" binding:"omitempty"`
+	Email   string `json:"email" binding:"omitempty,email"`
+	Address string `json:"address" binding:"omitempty"`
 }
 
 func GetRestaurants() []Restaurant {

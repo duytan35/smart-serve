@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"smart-serve/models"
 
 	"net/http"
@@ -19,16 +18,19 @@ import (
 // @Failure 400 {object} models.ErrorResponse
 // @Router /users [post]
 func CreateUser(c *gin.Context) {
-	var user models.User
+	var createUserInput models.CreateUserInput
 
-	fmt.Println("!2312312")
-	if err := c.ShouldBindJSON(&user); err != nil {
+	if err := c.ShouldBindJSON(&createUserInput); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
-	fmt.Println("!2312312")
-	fmt.Println(user)
+	user := models.User{
+		Name:         createUserInput.Name,
+		Email:        createUserInput.Email,
+		Password:     createUserInput.Password,
+		RestaurantID: createUserInput.RestaurantID,
+	}
 
 	user, err := models.CreateUser(user)
 
