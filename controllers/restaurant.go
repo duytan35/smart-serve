@@ -12,10 +12,9 @@ import (
 // @Accept  json
 // @Produce  json
 // @Param data body models.CreateRestaurantInput true "Restaurant Data"
-// @Success 200 {object} models.Restaurant
+// @Success 201 {object} models.Restaurant
 // @Failure 400 {object} models.ErrorResponse
 // @Router /restaurants [post]
-// @Example {json} Request-Example:
 func CreateRestaurant(c *gin.Context) {
 	var restaurant models.Restaurant
 
@@ -31,7 +30,7 @@ func CreateRestaurant(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, restaurant)
+	c.JSON(http.StatusCreated, restaurant)
 }
 
 // @Tags Restaurants

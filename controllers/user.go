@@ -8,13 +8,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// can use id is string or int
-
 // @Tags Users
 // @Accept  json
 // @Produce  json
 // @Param data body models.CreateUserInput true "User Data"
-// @Success 200 {object} models.User
+// @Success 201 {object} models.User
 // @Failure 400 {object} models.ErrorResponse
 // @Router /users [post]
 func CreateUser(c *gin.Context) {
@@ -39,7 +37,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusCreated, user)
 }
 
 // @Tags Users
@@ -47,6 +45,7 @@ func CreateUser(c *gin.Context) {
 // @Produce  json
 // @Success 200 {array} models.User
 // @Router /users [get]
+// @Security BearerAuth
 func GetUsers(c *gin.Context) {
 	users := models.GetUsers()
 	c.JSON(http.StatusOK, users)
@@ -59,6 +58,7 @@ func GetUsers(c *gin.Context) {
 // @Success 200 {object} models.User
 // @Failure 404 {object} models.ErrorResponse
 // @Router /users/{id} [get]
+// @Security BearerAuth
 func GetUser(c *gin.Context) {
 	id := c.Param("id")
 
@@ -79,6 +79,7 @@ func GetUser(c *gin.Context) {
 // @Failure 400 {object} models.ErrorResponse
 // @Failure 500 {object} models.ErrorResponse
 // @Router /users/{id} [patch]
+// @Security BearerAuth
 func UpdateUser(c *gin.Context) {
 	id := c.Param("id")
 	var user models.UpdateUserInput
@@ -104,6 +105,7 @@ func UpdateUser(c *gin.Context) {
 // @Success 200 {object} map[string]string
 // @Failure 400 {object} models.ErrorResponse
 // @Router /users/{id} [delete]
+// @Security BearerAuth
 func DeleteUser(c *gin.Context) {
 	id := c.Param("id")
 	if err := models.DeleteUser(id); err != nil {

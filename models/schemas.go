@@ -12,8 +12,8 @@ func Migrate() {
 type Restaurant struct {
 	ID      uint   `json:"id" gorm:"primaryKey;autoIncrement"`
 	Name    string `json:"name" binding:"required"`
-	Phone   string `json:"phone" gorm:"unique" binding:"required"`
-	Email   string `json:"email" gorm:"unique" binding:"required,email"`
+	Phone   string `json:"phone" binding:"required"`
+	Email   string `json:"email" gorm:"uniqueIndex;size:255" binding:"required,email"`
 	Address string `json:"address" binding:"required"`
 	Users   []User `json:"users" gorm:"foreignKey:RestaurantID"`
 }
@@ -21,7 +21,7 @@ type Restaurant struct {
 type User struct {
 	ID           uint        `json:"id" gorm:"primaryKey;autoIncrement"`
 	Name         string      `json:"name" binding:"required"`
-	Email        string      `json:"email" gorm:"unique" binding:"required,email"`
+	Email        string      `json:"email" gorm:"uniqueIndex;size:255" binding:"required,email"`
 	Password     string      `json:"-" binding:"required"`
 	RestaurantID uint        `json:"restaurantId" gorm:"not null"` // Foreign key
 	Restaurant   *Restaurant `json:"restaurant"`

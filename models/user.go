@@ -66,3 +66,15 @@ func DeleteUser(id string) error {
 
 	return nil
 }
+
+func GetUserByEmail(email string) (User, error) {
+	var user User
+
+	err := DB.Where(&User{Email: email}).First(&user).Error
+
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
+}

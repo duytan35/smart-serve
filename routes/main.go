@@ -13,6 +13,7 @@ import (
 func Config(r *gin.Engine) {
 	v1 := r.Group("/api/v1")
 
+	addAuthRoutes(v1)
 	addUserRoutes(v1)
 	addRestaurantRoutes(v1)
 

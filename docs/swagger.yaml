@@ -1,7 +1,28 @@
 basePath: /api/v1
 definitions:
+  controllers.SignInData:
+    properties:
+      email:
+        example: user@gmail.com
+        type: string
+      password:
+        example: "12345678"
+        minLength: 8
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  controllers.SignInResponse:
+    properties:
+      accessToken:
+        type: string
+    type: object
   models.CreateRestaurantInput:
     properties:
+      address:
+        example: 36 Pasteur, Ben Nghe, Quan 1, Ho Chi Minh City
+        type: string
       email:
         example: example@gmail.com
         type: string
@@ -12,6 +33,7 @@ definitions:
         example: "1234567890"
         type: string
     required:
+    - address
     - email
     - name
     - phone
@@ -19,7 +41,7 @@ definitions:
   models.CreateUserInput:
     properties:
       email:
-        example: restaurant@gmail.com
+        example: user@gmail.com
         type: string
       name:
         example: Nguyen Van A
@@ -44,6 +66,8 @@ definitions:
     type: object
   models.Restaurant:
     properties:
+      address:
+        type: string
       email:
         type: string
       id:
@@ -57,12 +81,15 @@ definitions:
           $ref: '#/definitions/models.User'
         type: array
     required:
+    - address
     - email
     - name
     - phone
     type: object
   models.UpdateRestaurantInput:
     properties:
+      address:
+        type: string
       email:
         type: string
       name:
@@ -88,15 +115,14 @@ definitions:
         type: integer
       name:
         type: string
-      password:
-        type: string
+      restaurant:
+        $ref: '#/definitions/models.Restaurant'
       restaurantId:
         description: Foreign key
         type: integer
     required:
     - email
     - name
-    - password
     type: object
 host: localhost:5000
 info:
@@ -105,6 +131,49 @@ info:
   title: Smart Serve
   version: "1.0"
 paths:
+  /auth/me:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Auth
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Sign in data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.SignInData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.SignInResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      tags:
+      - Auth
   /restaurants:
     get:
       consumes:
@@ -133,8 +202,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
             $ref: '#/definitions/models.Restaurant'
         "400":
@@ -235,6 +304,8 @@ paths:
             items:
               $ref: '#/definitions/models.User'
             type: array
+      security:
+      - BearerAuth: []
       tags:
       - Users
     post:
@@ -250,8 +321,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
             $ref: '#/definitions/models.User'
         "400":
@@ -283,6 +354,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - BearerAuth: []
       tags:
       - Users
     get:
@@ -305,6 +378,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - BearerAuth: []
       tags:
       - Users
     patch:
@@ -337,9 +412,16 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - BearerAuth: []
       tags:
       - Users
 schemes:
 - http
 - https
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

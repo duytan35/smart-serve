@@ -17,6 +17,10 @@ import (
 // @schemes http https
 // @BasePath /api/v1
 
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+
 func main() {
 	if os.Getenv("MODE") != "production" {
 		err := godotenv.Load(".env")
