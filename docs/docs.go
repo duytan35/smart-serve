@@ -35,13 +35,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.User"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controllers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Restaurant"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -73,13 +79,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controllers.SignInResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controllers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/controllers.SignInResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -87,6 +99,11 @@ const docTemplate = `{
         },
         "/restaurants": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -94,16 +111,28 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Restaurants"
+                    "Admin"
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Restaurant"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controllers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.Restaurant"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -133,91 +162,29 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/models.Restaurant"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/restaurants/{id}": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Restaurants"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Restaurant ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Restaurant"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Restaurants"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Restaurant ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controllers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Restaurant"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -228,13 +195,6 @@ const docTemplate = `{
                     "Restaurants"
                 ],
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Restaurant ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
                     {
                         "description": "Restaurant Data",
                         "name": "restaurant",
@@ -249,25 +209,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Restaurant"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controllers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Restaurant"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
             }
         },
-        "/users": {
+        "/restaurants/{id}": {
             "get": {
                 "security": [
                     {
@@ -281,77 +241,12 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Users"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.User"
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Users"
-                ],
-                "parameters": [
-                    {
-                        "description": "User Data",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.CreateUserInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/models.User"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Users"
+                    "Admin"
                 ],
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "User ID",
+                        "description": "Restaurant ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -361,13 +256,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.User"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controllers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Restaurant"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -385,12 +286,12 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Users"
+                    "Admin"
                 ],
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "User ID",
+                        "description": "Restaurant ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -400,70 +301,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Users"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "User Data",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.UpdateUserInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.User"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controllers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -471,6 +321,18 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "controllers.Response": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
         "controllers.SignInData": {
             "type": "object",
             "required": [
@@ -480,7 +342,7 @@ const docTemplate = `{
             "properties": {
                 "email": {
                     "type": "string",
-                    "example": "user@gmail.com"
+                    "example": "example@gmail.com"
                 },
                 "password": {
                     "type": "string",
@@ -491,8 +353,29 @@ const docTemplate = `{
         },
         "controllers.SignInResponse": {
             "type": "object",
+            "required": [
+                "address",
+                "email",
+                "name",
+                "phone"
+            ],
             "properties": {
                 "accessToken": {
+                    "type": "string"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
                     "type": "string"
                 }
             }
@@ -503,6 +386,7 @@ const docTemplate = `{
                 "address",
                 "email",
                 "name",
+                "password",
                 "phone"
             ],
             "properties": {
@@ -518,45 +402,14 @@ const docTemplate = `{
                     "type": "string",
                     "example": "Example Restaurant"
                 },
-                "phone": {
-                    "type": "string",
-                    "example": "1234567890"
-                }
-            }
-        },
-        "models.CreateUserInput": {
-            "type": "object",
-            "required": [
-                "email",
-                "name",
-                "password",
-                "restaurantId"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string",
-                    "example": "user@gmail.com"
-                },
-                "name": {
-                    "type": "string",
-                    "example": "Nguyen Van A"
-                },
                 "password": {
                     "type": "string",
                     "minLength": 8,
                     "example": "12345678"
                 },
-                "restaurantId": {
-                    "description": "Foreign key",
-                    "type": "integer"
-                }
-            }
-        },
-        "models.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string"
+                "phone": {
+                    "type": "string",
+                    "example": "1234567890"
                 }
             }
         },
@@ -583,12 +436,6 @@ const docTemplate = `{
                 },
                 "phone": {
                     "type": "string"
-                },
-                "users": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.User"
-                    }
                 }
             }
         },
@@ -604,48 +451,12 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "phone": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.UpdateUserInput": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
                 "password": {
                     "type": "string",
                     "minLength": 8
-                }
-            }
-        },
-        "models.User": {
-            "type": "object",
-            "required": [
-                "email",
-                "name"
-            ],
-            "properties": {
-                "email": {
+                },
+                "phone": {
                     "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "restaurant": {
-                    "$ref": "#/definitions/models.Restaurant"
-                },
-                "restaurantId": {
-                    "description": "Foreign key",
-                    "type": "integer"
                 }
             }
         }
