@@ -6,29 +6,20 @@ import (
 )
 
 func Migrate() {
-	DB.AutoMigrate(&Restaurant{}, &User{})
+	DB.AutoMigrate(&Restaurant{})
 }
 
 type Restaurant struct {
-	ID      uint   `json:"id" gorm:"primaryKey;autoIncrement"`
-	Name    string `json:"name" binding:"required"`
-	Phone   string `json:"phone" binding:"required"`
-	Email   string `json:"email" gorm:"uniqueIndex;size:255" binding:"required,email"`
-	Address string `json:"address" binding:"required"`
-	Users   []User `json:"users" gorm:"foreignKey:RestaurantID"`
+	ID       uint   `json:"id" gorm:"primaryKey;autoIncrement"`
+	Name     string `json:"name" binding:"required"`
+	Phone    string `json:"phone" binding:"required"`
+	Email    string `json:"email" gorm:"uniqueIndex;size:255" binding:"required,email"`
+	Address  string `json:"address" binding:"required"`
+	Password string `json:"-" binding:"required,min=8"`
 }
 
-type User struct {
-	ID           uint        `json:"id" gorm:"primaryKey;autoIncrement"`
-	Name         string      `json:"name" binding:"required"`
-	Email        string      `json:"email" gorm:"uniqueIndex;size:255" binding:"required,email"`
-	Password     string      `json:"-" binding:"required"`
-	RestaurantID uint        `json:"restaurantId" gorm:"not null"` // Foreign key
-	Restaurant   *Restaurant `json:"restaurant"`
-}
-
-// apply only create user
-func (u *User) BeforeSave(tx *gorm.DB) (err error) {
+// apply only create
+func (u *Restaurant) BeforeSave(tx *gorm.DB) (err error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err

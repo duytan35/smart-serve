@@ -14,7 +14,6 @@ func Config(r *gin.Engine) {
 	v1 := r.Group("/api/v1")
 
 	addAuthRoutes(v1)
-	addUserRoutes(v1)
 	addRestaurantRoutes(v1)
 
 	v1.GET("/docs", func(c *gin.Context) { c.Redirect(http.StatusFound, "./docs/index.html") })

@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"fmt"
 	"smart-serve/models"
 	"smart-serve/utils"
+	"strconv"
 
 	"net/http"
 
@@ -12,11 +12,12 @@ import (
 )
 
 type SignInData struct {
-	Email    string `json:"email" binding:"required,email" example:"user@gmail.com"`
+	Email    string `json:"email" binding:"required,email" example:"example@gmail.com"`
 	Password string `json:"password" binding:"required,min=8" example:"12345678"`
 }
 
 type SignInResponse struct {
+	models.Restaurant
 	AccessToken string `json:"accessToken"`
 }
 
@@ -24,53 +25,69 @@ type SignInResponse struct {
 // @Accept json
 // @Produce json
 // @Param data body SignInData true "Sign in data"
-// @Success 200 {object} SignInResponse
-// @Failure 400 {object} models.ErrorResponse
+// @Success 200 {object} Response{data=SignInResponse}
 // @Router /auth/sign-in [post]
 func SignIn(c *gin.Context) {
 	var signInData SignInData
 
 	if err := c.ShouldBindJSON(&signInData); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		c.JSON(http.StatusBadRequest, Response{
+			Success: false,
+			Message: err.Error(),
+		})
 		return
 	}
 
-	user, err := models.GetUserByEmail(signInData.Email)
-	fmt.Println(user)
+	restaurant, err := models.GetRestaurantByEmail(signInData.Email)
 
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": "Email not found"})
+		c.JSON(http.StatusNotFound, Response{
+			Success: false,
+			Message: "Email not found",
+		})
 		return
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(signInData.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(restaurant.Password), []byte(signInData.Password))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid password"})
+		c.JSON(http.StatusBadRequest, Response{
+			Success: false,
+			Message: "Invalid password",
+		})
 		return
 	}
 
-	accessToken, _ := utils.GenerateJWT(user.ID)
+	accessToken, _ := utils.GenerateJWT(restaurant.ID)
 
-	c.JSON(http.StatusOK, SignInResponse{
-		AccessToken: accessToken,
+	c.JSON(http.StatusOK, Response{
+		Success: true,
+		Data: SignInResponse{
+			AccessToken: accessToken,
+			Restaurant:  restaurant,
+		},
 	})
 }
 
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Success 200 {object} models.User
-// @Failure 401 {object} models.ErrorResponse
+// @Success 200 {object} Response{data=models.Restaurant}
 // @Router /auth/me [get]
 // @Security BearerAuth
 func GetMe(c *gin.Context) {
-	userId := c.GetString("userId")
+	id := c.GetUint("id")
 
-	user, err := models.GetUser(userId)
+	restaurant, err := models.GetRestaurant(strconv.FormatUint(uint64(id), 10))
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
+		c.JSON(http.StatusNotFound, Response{
+			Success: false,
+			Message: "Restaurant not found",
+		})
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, Response{
+		Success: true,
+		Data:    restaurant,
+	})
 }
