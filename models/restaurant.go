@@ -58,7 +58,7 @@ func UpdateRestaurant(id string, restaurant UpdateRestaurantInput) (Restaurant, 
 
 func GetRestaurant(id string) (Restaurant, error) {
 	var restaurant Restaurant
-	if err := DB.First(&restaurant, id).Error; err != nil {
+	if err := DB.Where("id = ?", id).First(&restaurant).Error; err != nil {
 		return Restaurant{}, err
 	}
 
