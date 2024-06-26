@@ -5,6 +5,7 @@ import (
 	"os"
 	"smart-serve/models"
 	"smart-serve/routes"
+	"smart-serve/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -31,6 +32,7 @@ func main() {
 
 	models.ConnectDB()
 	models.Migrate()
+	utils.InitS3Uploader()
 
 	r := gin.Default()
 

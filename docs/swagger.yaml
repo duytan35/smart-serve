@@ -105,52 +105,7 @@ info:
   title: Smart Serve
   version: "1.0"
 paths:
-  /auth/me:
-    get:
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/controllers.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/models.Restaurant'
-              type: object
-      security:
-      - BearerAuth: []
-      tags:
-      - Auth
-  /auth/sign-in:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: Sign in data
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/controllers.SignInData'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/controllers.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/controllers.SignInResponse'
-              type: object
-      tags:
-      - Auth
-  /restaurants:
+  /admin/restaurants:
     get:
       consumes:
       - application/json
@@ -172,57 +127,7 @@ paths:
       - BearerAuth: []
       tags:
       - Admin
-    patch:
-      consumes:
-      - application/json
-      parameters:
-      - description: Restaurant Data
-        in: body
-        name: restaurant
-        required: true
-        schema:
-          $ref: '#/definitions/models.UpdateRestaurantInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/controllers.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/models.Restaurant'
-              type: object
-      security:
-      - BearerAuth: []
-      tags:
-      - Restaurants
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: Restaurant Data
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/models.CreateRestaurantInput'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            allOf:
-            - $ref: '#/definitions/controllers.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/models.Restaurant'
-              type: object
-      tags:
-      - Restaurants
-  /restaurants/{id}:
+  /admin/restaurants/{id}:
     delete:
       consumes:
       - application/json
@@ -273,6 +178,128 @@ paths:
       - BearerAuth: []
       tags:
       - Admin
+  /auth/me:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Restaurant'
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - Auth
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Sign in data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.SignInData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/controllers.SignInResponse'
+              type: object
+      tags:
+      - Auth
+  /files:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: File to upload
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - Files
+  /restaurants:
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Restaurant Data
+        in: body
+        name: restaurant
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateRestaurantInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Restaurant'
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - Restaurants
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Restaurant Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateRestaurantInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Restaurant'
+              type: object
+      tags:
+      - Restaurants
 schemes:
 - http
 - https

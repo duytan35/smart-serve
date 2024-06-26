@@ -11,7 +11,7 @@ import (
 // @Accept  json
 // @Produce  json
 // @Success 200 {object} Response{data=[]models.Restaurant}
-// @Router /restaurants [get]
+// @Router /admin/restaurants [get]
 // @Security BearerAuth
 func GetRestaurants(c *gin.Context) {
 	restaurants := models.GetRestaurants()
@@ -26,11 +26,10 @@ func GetRestaurants(c *gin.Context) {
 // @Produce  json
 // @Param id path string true "Restaurant ID"
 // @Success 200 {object} Response{data=models.Restaurant}
-// @Router /restaurants/{id} [get]
+// @Router /admin/restaurants/{id} [get]
 // @Security BearerAuth
 func GetRestaurant(c *gin.Context) {
 	id := c.Param("id")
-
 	restaurant, err := models.GetRestaurant(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, Response{
@@ -50,7 +49,7 @@ func GetRestaurant(c *gin.Context) {
 // @Produce  json
 // @Param id path string true "Restaurant ID"
 // @Success 200 {object} Response{data=nil}
-// @Router /restaurants/{id} [delete]
+// @Router /admin/restaurants/{id} [delete]
 // @Security BearerAuth
 func DeleteRestaurant(c *gin.Context) {
 	id := c.Param("id")

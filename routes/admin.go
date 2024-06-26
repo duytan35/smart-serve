@@ -12,8 +12,8 @@ func addAdminRoutes(r *gin.RouterGroup) {
 
 	group.Use(middlewares.JWTAuth())
 	{
-		group.GET("", controllers.GetRestaurants)
-		group.GET("/:id", controllers.GetRestaurant)
-		group.DELETE("/:id", controllers.DeleteRestaurant)
+		group.GET("restaurants", controllers.GetRestaurants)
+		group.GET("restaurants/:id", controllers.GetRestaurant)
+		group.DELETE("restaurants/:id", controllers.DeleteRestaurant)
 	}
 }

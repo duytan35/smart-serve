@@ -14,9 +14,6 @@ func addRestaurantRoutes(r *gin.RouterGroup) {
 
 	group.Use(middlewares.JWTAuth())
 	{
-
-		// group.GET("/:id", controllers.GetRestaurant)
 		group.PATCH("/", controllers.UpdateRestaurant)
-		// group.DELETE("/:id", controllers.DeleteRestaurant)
 	}
 }

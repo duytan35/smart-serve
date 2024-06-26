@@ -3,7 +3,6 @@ package controllers
 import (
 	"smart-serve/models"
 	"smart-serve/utils"
-	"strconv"
 
 	"net/http"
 
@@ -57,7 +56,7 @@ func SignIn(c *gin.Context) {
 		return
 	}
 
-	accessToken, _ := utils.GenerateJWT(restaurant.ID)
+	accessToken, _ := utils.GenerateJWT(restaurant.ID.String())
 
 	c.JSON(http.StatusOK, Response{
 		Success: true,
@@ -75,9 +74,9 @@ func SignIn(c *gin.Context) {
 // @Router /auth/me [get]
 // @Security BearerAuth
 func GetMe(c *gin.Context) {
-	id := c.GetUint("id")
+	id := c.GetString("id")
 
-	restaurant, err := models.GetRestaurant(strconv.FormatUint(uint64(id), 10))
+	restaurant, err := models.GetRestaurant(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, Response{
 			Success: false,
