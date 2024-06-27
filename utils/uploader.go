@@ -39,21 +39,21 @@ func NewS3Uploader() (*S3Uploader, error) {
 	}, nil
 }
 
-func (u *S3Uploader) UploadFile(file multipart.File, fileHeader *multipart.FileHeader) (models.File, error) {
+func (u *S3Uploader) UploadFile(file multipart.File, fileHeader *multipart.FileHeader, key uuid.UUID) (models.File, error) {
 	defer file.Close()
 
 	size := fileHeader.Size
 	buffer := make([]byte, size)
 	file.Read(buffer)
 
-	key := uuid.New()
+	contentType := http.DetectContentType(buffer)
 
 	_, err := u.Client.PutObject(context.TODO(), &s3.PutObjectInput{
 		Bucket:        aws.String(u.BucketName),
 		Key:           aws.String(key.String()),
 		Body:          bytes.NewReader(buffer),
 		ContentLength: &size,
-		ContentType:   aws.String(http.DetectContentType(buffer)),
+		ContentType:   aws.String(contentType),
 	})
 
 	if err != nil {
@@ -66,6 +66,19 @@ func (u *S3Uploader) UploadFile(file multipart.File, fileHeader *multipart.FileH
 		MineType: http.DetectContentType(buffer),
 		Url:      os.Getenv("S3_URL") + key.String(),
 	}, nil
+}
+
+func (u *S3Uploader) RemoveFile(key uuid.UUID) error {
+	_, err := u.Client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
+		Bucket: aws.String(u.BucketName),
+		Key:    aws.String(key.String()),
+	})
+
+	if err != nil {
+		return fmt.Errorf("failed to delete file from S3, %v", err)
+	}
+
+	return nil
 }
 
 var Uploader *S3Uploader

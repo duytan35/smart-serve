@@ -10,11 +10,12 @@ import (
 func addFileRoutes(r *gin.RouterGroup) {
 	group := r.Group("files")
 
+	group.GET("/:id", controllers.GetFile)
+
 	group.Use(middlewares.JWTAuth())
 	{
-		group.POST("", controllers.Upload)
-		group.GET("/:id", controllers.Upload)
-		group.PUT("/:id", controllers.Upload)
-		group.DELETE("/:id", controllers.Upload)
+		group.POST("", controllers.UploadFile)
+		group.PUT("/:id", controllers.UpdateFile)
+		group.DELETE("/:id", controllers.DeleteFile)
 	}
 }
