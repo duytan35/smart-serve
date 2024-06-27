@@ -1,9 +1,5 @@
 package models
 
-import (
-	"golang.org/x/crypto/bcrypt"
-)
-
 func CreateFile(file File) (File, error) {
 	if err := DB.Create(&file).Error; err != nil {
 		return File{}, err
@@ -12,39 +8,31 @@ func CreateFile(file File) (File, error) {
 	return file, nil
 }
 
-func UpdateFile(id string, restaurant UpdateRestaurantInput) (Restaurant, error) {
-	var updatedRestaurant Restaurant
-	if err := DB.First(&updatedRestaurant, id).Error; err != nil {
-		return Restaurant{}, err
+func UpdateFile(id string, file File) (File, error) {
+	var updatedFile File
+	if err := DB.Where("id = ?", id).First(&updatedFile).Error; err != nil {
+		return File{}, err
 	}
 
-	if updatedRestaurant.Password != "" {
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(updatedRestaurant.Password), bcrypt.DefaultCost)
-		if err != nil {
-			return Restaurant{}, err
-		}
-		updatedRestaurant.Password = string(hashedPassword)
+	if err := DB.Model(&updatedFile).Updates(file).Error; err != nil {
+		return File{}, err
 	}
 
-	if err := DB.Model(&updatedRestaurant).Updates(restaurant).Error; err != nil {
-		return Restaurant{}, err
-	}
-
-	return updatedRestaurant, nil
+	return updatedFile, nil
 }
 
-func GetFile(id string) (Restaurant, error) {
-	var restaurant Restaurant
-	if err := DB.First(&restaurant, id).Error; err != nil {
-		return Restaurant{}, err
+func GetFile(id string) (File, error) {
+	var file File
+	if err := DB.Where("id = ?", id).First(&file).Error; err != nil {
+		return File{}, err
 	}
 
-	return restaurant, nil
+	return file, nil
 }
 
 func DeleteFile(id string) error {
-	var restaurant Restaurant
-	if err := DB.Delete(&restaurant, id).Error; err != nil {
+	var file File
+	if err := DB.Where("id = ?", id).Delete(&file).Error; err != nil {
 		return err
 	}
 

@@ -27,13 +27,17 @@ definitions:
         type: string
       address:
         type: string
+      createdAt:
+        type: string
       email:
         type: string
       id:
-        type: integer
+        type: string
       name:
         type: string
       phone:
+        type: string
+      updatedAt:
         type: string
     required:
     - address
@@ -66,17 +70,42 @@ definitions:
     - password
     - phone
     type: object
+  models.File:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      mineType:
+        type: string
+      name:
+        type: string
+      restaurantId:
+        type: string
+      updatedAt:
+        type: string
+      url:
+        type: string
+    required:
+    - mineType
+    - name
+    - url
+    type: object
   models.Restaurant:
     properties:
       address:
         type: string
+      createdAt:
+        type: string
       email:
         type: string
       id:
-        type: integer
+        type: string
       name:
         type: string
       phone:
+        type: string
+      updatedAt:
         type: string
     required:
     - address
@@ -236,6 +265,32 @@ paths:
       produces:
       - application/json
       responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.File'
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - Files
+  /files/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: File ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
         "200":
           description: OK
           schema:
@@ -244,6 +299,52 @@ paths:
             - properties:
                 data:
                   type: object
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - Files
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: File ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "302":
+          description: Found
+      tags:
+      - Files
+    put:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: File ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: File to upload
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.File'
               type: object
       security:
       - BearerAuth: []
