@@ -1,14 +1,30 @@
 package controllers
 
 import (
+	"errors"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"smart-serve/models"
 	"smart-serve/utils"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
+
+const MaxFileSize = 1024 * 1024 // 1MB
+
+func isImage(fileHeader *multipart.FileHeader) error {
+	contentType := fileHeader.Header.Get("Content-Type")
+	if !strings.HasPrefix(contentType, "image/") {
+		return errors.New("file is not an image")
+	}
+	if fileHeader.Size > MaxFileSize {
+		return errors.New("file size exceeds 1MB")
+	}
+	return nil
+}
 
 // @Tags Files
 // @Accept multipart/form-data
@@ -18,11 +34,20 @@ import (
 // @Router /files [post]
 // @Security BearerAuth
 func UploadFile(c *gin.Context) {
-	restaurantId := c.GetString("id")
+	restaurantId := c.GetString("restaurantId")
 
 	file, header, err := c.Request.FormFile("file")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get file"})
+		return
+	}
+
+	// Check if the file is an image and size is less than 2MB
+	if err := isImage(header); err != nil {
+		c.JSON(http.StatusBadRequest, Response{
+			Success: false,
+			Message: err.Error(),
+		})
 		return
 	}
 
@@ -75,7 +100,7 @@ func GetFile(c *gin.Context) {
 // @Security BearerAuth
 func UpdateFile(c *gin.Context) {
 	id := c.Param("id")
-	restaurantId := c.GetString("id")
+	restaurantId := c.GetString("restaurantId")
 
 	file, header, err := c.Request.FormFile("file")
 	if err != nil {
@@ -83,6 +108,12 @@ func UpdateFile(c *gin.Context) {
 			Success: false,
 			Message: err.Error(),
 		})
+		return
+	}
+
+	// Check if the file is an image and size is less than 2MB
+	if err := isImage(header); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -139,7 +170,7 @@ func UpdateFile(c *gin.Context) {
 // @Security BearerAuth
 func DeleteFile(c *gin.Context) {
 	id := c.Param("id")
-	restaurantId := c.GetString("id")
+	restaurantId := c.GetString("restaurantId")
 
 	oldFile, err := models.GetFile(id)
 	if err != nil {

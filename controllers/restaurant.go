@@ -58,7 +58,7 @@ func CreateRestaurant(c *gin.Context) {
 // @Router /restaurants [patch]
 // @Security BearerAuth
 func UpdateRestaurant(c *gin.Context) {
-	id := c.GetString("id")
+	restaurantId := c.GetString("restaurantId")
 	var restaurant models.UpdateRestaurantInput
 
 	if err := c.ShouldBindJSON(&restaurant); err != nil {
@@ -69,7 +69,7 @@ func UpdateRestaurant(c *gin.Context) {
 		return
 	}
 
-	updatedRestaurant, err := models.UpdateRestaurant(id, restaurant)
+	updatedRestaurant, err := models.UpdateRestaurant(restaurantId, restaurant)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Response{
 			Success: false,
