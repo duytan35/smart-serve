@@ -27,7 +27,7 @@ func CreateDishGroup(c *gin.Context) {
 		return
 	}
 
-	restaurantId, _ := uuid.Parse(c.GetString("id"))
+	restaurantId, _ := uuid.Parse(c.GetString("restaurantId"))
 	dishGroup := models.DishGroup{
 		Name:         createDishGroup.Name,
 		RestaurantID: restaurantId,
@@ -81,7 +81,7 @@ func GetDishGroup(c *gin.Context) {
 // @Router /dish-groups [get]
 // @Security BearerAuth
 func GetDishGroups(c *gin.Context) {
-	restaurantId := c.GetString("id")
+	restaurantId := c.GetString("restaurantId")
 
 	dishGroups := models.GetDishGroups(restaurantId)
 	c.JSON(http.StatusOK, Response{
@@ -99,7 +99,7 @@ func GetDishGroups(c *gin.Context) {
 // @Router /dish-groups/{id} [patch]
 // @Security BearerAuth
 func UpdateDishGroup(c *gin.Context) {
-	restaurantId := c.GetString("id")
+	restaurantId := c.GetString("restaurantId")
 	id := c.Param("id")
 
 	var restaurantInput models.DishGroupInput
@@ -139,7 +139,7 @@ func UpdateDishGroup(c *gin.Context) {
 // @Security BearerAuth
 func DeleteDishGroup(c *gin.Context) {
 	id := c.Param("id")
-	restaurantId := c.GetString("id")
+	restaurantId := c.GetString("restaurantId")
 
 	restaurantUuid, _ := uuid.Parse(restaurantId)
 

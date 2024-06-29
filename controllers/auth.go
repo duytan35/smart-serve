@@ -74,9 +74,9 @@ func SignIn(c *gin.Context) {
 // @Router /auth/me [get]
 // @Security BearerAuth
 func GetMe(c *gin.Context) {
-	id := c.GetString("id")
+	restaurantId := c.GetString("restaurantId")
 
-	restaurant, err := models.GetRestaurant(id)
+	restaurant, err := models.GetRestaurant(restaurantId)
 	if err != nil {
 		c.JSON(http.StatusNotFound, Response{
 			Success: false,

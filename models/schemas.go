@@ -52,8 +52,8 @@ type File struct {
 // Need unique name in each restaurant
 type DishGroup struct {
 	Model
-	RestaurantID uuid.UUID  `json:"restaurantId" gorm:"type:char(36);not null"`
-	Name         string     `json:"name" gorm:"not null" binding:"required"`
+	RestaurantID uuid.UUID  `json:"restaurantId" gorm:"uniqueIndex:idx_name_restaurant;type:char(36);not null"`
+	Name         string     `json:"name" gorm:"uniqueIndex:idx_name_restaurant;type:char(255);not null" binding:"required"`
 	Restaurant   Restaurant `json:"-" gorm:"foreignKey:RestaurantID;references:ID;constraint:OnDelete:CASCADE"`
 }
 
