@@ -70,6 +70,29 @@ definitions:
     - password
     - phone
     type: object
+  models.DishGroup:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      restaurantId:
+        type: string
+      updatedAt:
+        type: string
+    required:
+    - name
+    type: object
+  models.DishGroupInput:
+    properties:
+      name:
+        example: Noodles
+        type: string
+    required:
+    - name
+    type: object
   models.File:
     properties:
       createdAt:
@@ -252,6 +275,136 @@ paths:
               type: object
       tags:
       - Auth
+  /dish-groups:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.DishGroup'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - DishGroups
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: DishGroup Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.DishGroupInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.DishGroup'
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - DishGroups
+  /dish-groups/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: DishGroup ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - DishGroups
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: DishGroup ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.DishGroup'
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - DishGroups
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: DishGroup ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: DishGroup Data
+        in: body
+        name: restaurant
+        required: true
+        schema:
+          $ref: '#/definitions/models.DishGroupInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.DishGroup'
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - DishGroups
   /files:
     post:
       consumes:
