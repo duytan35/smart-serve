@@ -7,6 +7,7 @@ import (
 	"smart-serve/routes"
 	"smart-serve/utils"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -22,8 +23,8 @@ import (
 // @in header
 // @name Authorization
 
-func main() {
-	if os.Getenv("MODE") != "production" {
+func configApp(r *gin.Engine) {
+	if os.Getenv("MODE") != "release" {
 		err := godotenv.Load(".env")
 		if err != nil {
 			log.Fatal("Error loading .env file")
@@ -34,9 +35,22 @@ func main() {
 	models.Migrate()
 	utils.InitS3Uploader()
 
-	r := gin.Default()
+	config := cors.DefaultConfig()
+	config.AllowCredentials = true
+	config.AllowWildcard = true
+	config.AllowOrigins = []string{"http://*", "https://*"}
+
+	r.Use(cors.New(config))
 
 	routes.Config(r)
+}
+
+func main() {
+	gin.SetMode(os.Getenv("MODE"))
+
+	r := gin.Default()
+
+	configApp(r)
 
 	r.Run(":" + os.Getenv("PORT"))
 }
