@@ -61,7 +61,6 @@ func main() {
 	r := gin.Default()
 
 	configApp(r)
-	configApp(r)
 
 	r.Run(":" + os.Getenv("PORT"))
 }
