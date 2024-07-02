@@ -150,7 +150,6 @@ definitions:
       phone:
         type: string
     type: object
-host: localhost:5000
 info:
   contact: {}
   description: Smart Serve API

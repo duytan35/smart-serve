@@ -10,12 +10,13 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+
+	"smart-serve/docs"
 )
 
 // @title Smart Serve
 // @description Smart Serve API
 // @version 1.0
-// @host localhost:5000
 // @schemes http https
 // @BasePath /api/v1
 
@@ -23,14 +24,14 @@ import (
 // @in header
 // @name Authorization
 
-func configApp(r *gin.Engine) {
-	if os.Getenv("MODE") != "release" {
-		err := godotenv.Load(".env")
-		if err != nil {
-			log.Fatal("Error loading .env file")
-		}
+func configSwaggerHost() string {
+	if os.Getenv("MODE") == "release" {
+		return "34.126.68.84:5000"
 	}
+	return "localhost:5000"
+}
 
+func configApp(r *gin.Engine) {
 	models.ConnectDB()
 	models.Migrate()
 	utils.InitS3Uploader()
@@ -42,10 +43,19 @@ func configApp(r *gin.Engine) {
 
 	r.Use(cors.New(config))
 
+	docs.SwaggerInfo.Host = configSwaggerHost()
+
 	routes.Config(r)
 }
 
 func main() {
+	if os.Getenv("MODE") != "release" {
+		err := godotenv.Load(".env")
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
+	}
+
 	gin.SetMode(os.Getenv("MODE"))
 
 	r := gin.Default()

@@ -10,7 +10,6 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:5000",
     "basePath": "/api/v1",
     "paths": {
         "/admin/restaurants": {
