@@ -27,6 +27,8 @@ definitions:
         type: string
       address:
         type: string
+      avatar:
+        type: string
       createdAt:
         type: string
       email:
@@ -44,6 +46,28 @@ definitions:
     - email
     - name
     - phone
+    type: object
+  models.CreateDishInput:
+    properties:
+      description:
+        example: Phở bò Việt Nam
+        type: string
+      dishGroupId:
+        example: "1"
+        type: string
+      name:
+        example: Phở
+        type: string
+      price:
+        example: 50000
+        type: number
+      status:
+        example: 1
+        type: integer
+    required:
+    - dishGroupId
+    - name
+    - price
     type: object
   models.CreateRestaurantInput:
     properties:
@@ -69,6 +93,31 @@ definitions:
     - name
     - password
     - phone
+    type: object
+  models.Dish:
+    properties:
+      createdAt:
+        type: string
+      description:
+        description: optional
+        type: string
+      dishGroupId:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      price:
+        type: number
+      status:
+        description: '0: inactive, 1: active'
+        type: integer
+      updatedAt:
+        type: string
+    required:
+    - dishGroupId
+    - name
+    - price
     type: object
   models.DishGroup:
     properties:
@@ -107,16 +156,15 @@ definitions:
         type: string
       updatedAt:
         type: string
-      url:
-        type: string
     required:
     - mineType
     - name
-    - url
     type: object
   models.Restaurant:
     properties:
       address:
+        type: string
+      avatar:
         type: string
       createdAt:
         type: string
@@ -136,9 +184,29 @@ definitions:
     - name
     - phone
     type: object
+  models.UpdateDishInput:
+    properties:
+      description:
+        example: Phở bò Việt Nam
+        type: string
+      name:
+        example: Phở
+        type: string
+      price:
+        example: 50000
+        type: number
+      status:
+        example: 1
+        type: integer
+    required:
+    - name
+    - price
+    type: object
   models.UpdateRestaurantInput:
     properties:
       address:
+        type: string
+      avatar:
         type: string
       email:
         type: string
@@ -373,7 +441,7 @@ paths:
       - BearerAuth: []
       tags:
       - DishGroups
-    patch:
+    put:
       consumes:
       - application/json
       parameters:
@@ -384,7 +452,7 @@ paths:
         type: string
       - description: DishGroup Data
         in: body
-        name: restaurant
+        name: dishGroup
         required: true
         schema:
           $ref: '#/definitions/models.DishGroupInput'
@@ -404,6 +472,142 @@ paths:
       - BearerAuth: []
       tags:
       - DishGroups
+  /dishes:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Dish Group ID
+        in: query
+        name: dishGroupId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Dish'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - Dishes
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Dish Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateDishInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Dish'
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - Dishes
+  /dishes/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Dish ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - Dishes
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Dish ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Dish'
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - Dishes
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Dish ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Dish Data
+        in: body
+        name: DishInput
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateDishInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Dish'
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - Dishes
   /files:
     post:
       consumes:

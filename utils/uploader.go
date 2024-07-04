@@ -8,7 +8,6 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
-	"smart-serve/models"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -20,6 +19,12 @@ import (
 type S3Uploader struct {
 	Client     *s3.Client
 	BucketName string
+}
+
+type File struct {
+	ID       uuid.UUID
+	Name     string
+	MineType string
 }
 
 func NewS3Uploader() (*S3Uploader, error) {
@@ -39,7 +44,7 @@ func NewS3Uploader() (*S3Uploader, error) {
 	}, nil
 }
 
-func (u *S3Uploader) UploadFile(file multipart.File, fileHeader *multipart.FileHeader, key uuid.UUID) (models.File, error) {
+func (u *S3Uploader) UploadFile(file multipart.File, fileHeader *multipart.FileHeader, key uuid.UUID) (File, error) {
 	defer file.Close()
 
 	size := fileHeader.Size
@@ -57,14 +62,13 @@ func (u *S3Uploader) UploadFile(file multipart.File, fileHeader *multipart.FileH
 	})
 
 	if err != nil {
-		return models.File{}, fmt.Errorf("failed to upload file to S3, %v", err)
+		return File{}, fmt.Errorf("failed to upload file to S3, %v", err)
 	}
 
-	return models.File{
+	return File{
 		ID:       key,
 		Name:     fileHeader.Filename,
 		MineType: http.DetectContentType(buffer),
-		Url:      os.Getenv("S3_URL") + key.String(),
 	}, nil
 }
 
