@@ -364,6 +364,60 @@ const docTemplate = `{
                     }
                 }
             },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DishGroups"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "DishGroup ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "DishGroup Data",
+                        "name": "dishGroup",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DishGroupInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controllers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.DishGroup"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
             "delete": {
                 "security": [
                     {
@@ -408,8 +462,10 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "patch": {
+            }
+        },
+        "/dishes": {
+            "get": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -422,23 +478,165 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "DishGroups"
+                    "Dishes"
                 ],
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "DishGroup ID",
+                        "description": "Dish Group ID",
+                        "name": "dishGroupId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controllers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.Dish"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dishes"
+                ],
+                "parameters": [
+                    {
+                        "description": "Dish Data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateDishInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controllers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Dish"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/dishes/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dishes"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Dish ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controllers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Dish"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dishes"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Dish ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "DishGroup Data",
-                        "name": "restaurant",
+                        "description": "Dish Data",
+                        "name": "DishInput",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.DishGroupInput"
+                            "$ref": "#/definitions/models.UpdateDishInput"
                         }
                     }
                 ],
@@ -454,7 +652,52 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/models.DishGroup"
+                                            "$ref": "#/definitions/models.Dish"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dishes"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Dish ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controllers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
                                         }
                                     }
                                 }
@@ -773,6 +1016,9 @@ const docTemplate = `{
                 "address": {
                     "type": "string"
                 },
+                "avatar": {
+                    "type": "string"
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -790,6 +1036,36 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                }
+            }
+        },
+        "models.CreateDishInput": {
+            "type": "object",
+            "required": [
+                "dishGroupId",
+                "name",
+                "price"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "example": "Phở bò Việt Nam"
+                },
+                "dishGroupId": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Phở"
+                },
+                "price": {
+                    "type": "number",
+                    "example": 50000
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -823,6 +1099,42 @@ const docTemplate = `{
                 "phone": {
                     "type": "string",
                     "example": "1234567890"
+                }
+            }
+        },
+        "models.Dish": {
+            "type": "object",
+            "required": [
+                "dishGroupId",
+                "name",
+                "price"
+            ],
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "description": "optional",
+                    "type": "string"
+                },
+                "dishGroupId": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "status": {
+                    "description": "0: inactive, 1: active",
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
                 }
             }
         },
@@ -865,8 +1177,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "mineType",
-                "name",
-                "url"
+                "name"
             ],
             "properties": {
                 "createdAt": {
@@ -886,9 +1197,6 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
-                },
-                "url": {
-                    "type": "string"
                 }
             }
         },
@@ -902,6 +1210,9 @@ const docTemplate = `{
             ],
             "properties": {
                 "address": {
+                    "type": "string"
+                },
+                "avatar": {
                     "type": "string"
                 },
                 "createdAt": {
@@ -924,10 +1235,38 @@ const docTemplate = `{
                 }
             }
         },
+        "models.UpdateDishInput": {
+            "type": "object",
+            "required": [
+                "name",
+                "price"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "example": "Phở bò Việt Nam"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Phở"
+                },
+                "price": {
+                    "type": "number",
+                    "example": 50000
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
         "models.UpdateRestaurantInput": {
             "type": "object",
             "properties": {
                 "address": {
+                    "type": "string"
+                },
+                "avatar": {
                     "type": "string"
                 },
                 "email": {

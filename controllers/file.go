@@ -61,9 +61,15 @@ func UploadFile(c *gin.Context) {
 	}
 
 	parsedRestaurantId, _ := uuid.Parse(restaurantId)
-	newFile.RestaurantID = parsedRestaurantId
 
-	fileResponse, err := models.CreateFile(newFile)
+	var newFileModel models.File = models.File{
+		ID:           newFile.ID,
+		Name:         newFile.Name,
+		MineType:     newFile.MineType,
+		RestaurantID: parsedRestaurantId,
+	}
+
+	fileResponse, err := models.CreateFile(newFileModel)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Response{
 			Success: false,
@@ -144,7 +150,12 @@ func UpdateFile(c *gin.Context) {
 		return
 	}
 
-	updatedFile, err := models.UpdateFile(id, newFile)
+	var newFileModel models.File = models.File{
+		ID:       newFile.ID,
+		Name:     newFile.Name,
+		MineType: newFile.MineType,
+	}
+	updatedFile, err := models.UpdateFile(id, newFileModel)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Response{

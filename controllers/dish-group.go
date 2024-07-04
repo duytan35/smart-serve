@@ -94,17 +94,18 @@ func GetDishGroups(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param id path string true "DishGroup ID"
-// @Param restaurant body models.DishGroupInput true "DishGroup Data"
+// @Param dishGroup body models.DishGroupInput true "DishGroup Data"
 // @Success 200 {object} Response{data=models.DishGroup}
-// @Router /dish-groups/{id} [patch]
+// @Router /dish-groups/{id} [put]
 // @Security BearerAuth
 func UpdateDishGroup(c *gin.Context) {
-	restaurantId := c.GetString("restaurantId")
+	restaurantId, _ := uuid.Parse(c.GetString("restaurantId"))
+
 	id := c.Param("id")
 
-	var restaurantInput models.DishGroupInput
+	var dishGroupInput models.DishGroupInput
 
-	if err := c.ShouldBindJSON(&restaurantInput); err != nil {
+	if err := c.ShouldBindJSON(&dishGroupInput); err != nil {
 		c.JSON(http.StatusBadRequest, Response{
 			Success: false,
 			Message: err.Error(),
@@ -112,9 +113,7 @@ func UpdateDishGroup(c *gin.Context) {
 		return
 	}
 
-	restaurantUuid, _ := uuid.Parse(restaurantId)
-
-	updatedDishGroup, err := models.UpdateDishGroup(id, restaurantUuid, restaurantInput)
+	updatedDishGroup, err := models.UpdateDishGroup(id, restaurantId, dishGroupInput)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Response{
 			Success: false,
@@ -139,11 +138,9 @@ func UpdateDishGroup(c *gin.Context) {
 // @Security BearerAuth
 func DeleteDishGroup(c *gin.Context) {
 	id := c.Param("id")
-	restaurantId := c.GetString("restaurantId")
+	restaurantId, _ := uuid.Parse(c.GetString("restaurantId"))
 
-	restaurantUuid, _ := uuid.Parse(restaurantId)
-
-	if err := models.DeleteDishGroup(id, restaurantUuid); err != nil {
+	if err := models.DeleteDishGroup(id, restaurantId); err != nil {
 		c.JSON(http.StatusBadRequest, Response{
 			Success: false,
 			Message: err.Error(),

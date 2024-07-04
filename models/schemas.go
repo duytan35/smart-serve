@@ -37,6 +37,7 @@ type Restaurant struct {
 	Email    string    `json:"email" gorm:"uniqueIndex;size:255;not null" binding:"required,email"`
 	Address  string    `json:"address" gorm:"not null" binding:"required"`
 	Password string    `json:"-" gorm:"not null" binding:"required,min=8"`
+	Avatar   string    `json:"avatar"`
 }
 
 type File struct {
@@ -45,7 +46,6 @@ type File struct {
 	RestaurantID uuid.UUID  `json:"restaurantId" gorm:"index;type:char(36);not null"`
 	Name         string     `json:"name" gorm:"not null" binding:"required"`
 	MineType     string     `json:"mineType" gorm:"not null" binding:"required"`
-	Url          string     `json:"url" gorm:"not null" binding:"required"`
 	Restaurant   Restaurant `json:"-" gorm:"foreignKey:RestaurantID;references:ID;constraint:OnDelete:CASCADE"`
 }
 
@@ -59,14 +59,12 @@ type DishGroup struct {
 
 type Dish struct {
 	Model
-	RestaurantID uuid.UUID  `json:"restaurantId" gorm:"index;type:char(36);not null"`
-	DishGroupID  uint       `json:"dishGroupId" gorm:"index;not null" binding:"required"`
-	Name         string     `json:"name" gorm:"not null" binding:"required"`
-	Description  string     `json:"description"` // optional
-	Price        float64    `json:"price" gorm:"not null" binding:"required"`
-	Status       uint       `json:"status" gorm:"type:TINYINT;not null;default:1"` // 0: inactive, 1: active
-	Restaurant   Restaurant `json:"-" gorm:"foreignKey:RestaurantID;references:ID;constraint:OnDelete:CASCADE"`
-	DishGroup    DishGroup  `json:"-" gorm:"foreignKey:DishGroupID;references:ID;constraint:OnDelete:CASCADE"`
+	DishGroupID uint      `json:"dishGroupId" gorm:"index;not null" binding:"required"`
+	Name        string    `json:"name" gorm:"not null" binding:"required"`
+	Description string    `json:"description"` // optional
+	Price       float64   `json:"price" gorm:"not null" binding:"required"`
+	Status      uint      `json:"status" gorm:"TINYINT;not null;default 1"` // 0: inactive, 1: active
+	DishGroup   DishGroup `json:"-" gorm:"foreignKey:DishGroupID;references:ID;constraint:OnDelete:CASCADE"`
 }
 
 type DishImage struct {
@@ -85,7 +83,7 @@ type Discount struct {
 	Restaurant   Restaurant `json:"-" gorm:"foreignKey:RestaurantID;references:ID;constraint:OnDelete:CASCADE"`
 }
 
-type DiscountDish struct {
+type DiscountDish struct { // apply multiple discount for a dish
 	Model
 	DiscountID uint      `json:"discountId" gorm:"index;not null" binding:"required"`
 	DishID     uuid.UUID `json:"dishId" gorm:"index;not null" binding:"required"`

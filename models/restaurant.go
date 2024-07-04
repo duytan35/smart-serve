@@ -18,6 +18,7 @@ type UpdateRestaurantInput struct {
 	Email    string `json:"email" binding:"omitempty,email"`
 	Address  string `json:"address" binding:"omitempty"`
 	Password string `json:"password" binding:"omitempty,min=8"`
+	Avatar   string `json:"avatar" binding:"omitempty"`
 }
 
 func GetRestaurants() []Restaurant {
