@@ -12,12 +12,12 @@ import (
 // @Tags Tables
 // @Accept  json
 // @Produce  json
-// @Param data body models.CreateTableInput true "Table Data"
+// @Param data body models.TableInput true "Table Data"
 // @Success 201 {object} Response{data=models.Table}
 // @Router /tables [post]
 // @Security BearerAuth
 func CreateTable(c *gin.Context) {
-	var createTable models.CreateTableInput
+	var createTable models.TableInput
 
 	if err := c.ShouldBindJSON(&createTable); err != nil {
 		c.JSON(http.StatusBadRequest, Response{
@@ -99,7 +99,7 @@ func GetTables(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param id path string true "Table ID"
-// @Param TableInput body models.UpdateTableInput true "Table Data"
+// @Param TableInput body models.TableInput true "Table Data"
 // @Success 200 {object} Response{data=models.Table}
 // @Router /tables/{id} [put]
 // @Security BearerAuth
@@ -108,7 +108,7 @@ func UpdateTable(c *gin.Context) {
 
 	id := c.Param("id")
 
-	var tableInput models.UpdateTableInput
+	var tableInput models.TableInput
 
 	if err := c.ShouldBindJSON(&tableInput); err != nil {
 		c.JSON(http.StatusBadRequest, Response{

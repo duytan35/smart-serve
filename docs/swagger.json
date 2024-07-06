@@ -1262,7 +1262,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateTableInput"
+                            "$ref": "#/definitions/models.TableInput"
                         }
                     }
                 ],
@@ -1363,7 +1363,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateTableInput"
+                            "$ref": "#/definitions/models.TableInput"
                         }
                     }
                 ],
@@ -1583,27 +1583,6 @@
                 "phone": {
                     "type": "string",
                     "example": "1234567890"
-                }
-            }
-        },
-        "models.CreateTableInput": {
-            "type": "object",
-            "required": [
-                "name",
-                "restaurantId"
-            ],
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "example": "Bàn 1"
-                },
-                "restaurantId": {
-                    "type": "string",
-                    "example": "1"
-                },
-                "seats": {
-                    "type": "integer",
-                    "example": 4
                 }
             }
         },
@@ -1850,6 +1829,22 @@
                 }
             }
         },
+        "models.TableInput": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "Bàn 1"
+                },
+                "seats": {
+                    "type": "integer",
+                    "example": 4
+                }
+            }
+        },
         "models.UpdateDishInput": {
             "type": "object",
             "required": [
@@ -1911,22 +1906,6 @@
                 },
                 "phone": {
                     "type": "string"
-                }
-            }
-        },
-        "models.UpdateTableInput": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "example": "Bàn 1"
-                },
-                "seats": {
-                    "type": "integer",
-                    "example": 4
                 }
             }
         }
