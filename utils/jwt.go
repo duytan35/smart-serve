@@ -10,13 +10,15 @@ var jwtKey = []byte("my_secret_key")
 
 type Claims struct {
 	RestaurantID string `json:"restaurantId"`
+	Email        string `json:"email"`
 	jwt.RegisteredClaims
 }
 
-func GenerateJWT(id string) (string, error) {
+func GenerateJWT(id string, email string) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour) // 24h
 	claims := &Claims{
 		RestaurantID: id,
+		Email:        email,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},

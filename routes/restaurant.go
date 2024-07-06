@@ -12,7 +12,7 @@ func addRestaurantRoutes(r *gin.RouterGroup) {
 
 	group.POST("", controllers.CreateRestaurant)
 
-	group.Use(middlewares.JWTAuth())
+	group.Use(middlewares.AuthGuard())
 	{
 		group.PATCH("/", controllers.UpdateRestaurant)
 	}

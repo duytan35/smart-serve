@@ -10,7 +10,7 @@ import (
 func addDishRoutes(r *gin.RouterGroup) {
 	group := r.Group("dishes")
 
-	group.Use(middlewares.JWTAuth())
+	group.Use(middlewares.AuthGuard())
 	{
 		group.POST("", controllers.CreateDish)
 		group.GET("", controllers.GetDishes)

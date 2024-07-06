@@ -12,7 +12,7 @@ func addFileRoutes(r *gin.RouterGroup) {
 
 	group.GET("/:id", controllers.GetFile)
 
-	group.Use(middlewares.JWTAuth())
+	group.Use(middlewares.AuthGuard())
 	{
 		group.POST("", controllers.UploadFile)
 		group.PUT("/:id", controllers.UpdateFile)
