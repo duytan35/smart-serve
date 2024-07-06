@@ -6,13 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type CreateTableInput struct {
-	RestaurantID string `json:"restaurantId" binding:"required" example:"1"`
-	Name         string `json:"name" binding:"required" example:"Bàn 1"`
-	Seats        uint   `json:"seats" example:"4"`
-}
-
-type UpdateTableInput struct {
+type TableInput struct {
 	Name  string `json:"name" binding:"required" example:"Bàn 1"`
 	Seats uint   `json:"seats" example:"4"`
 }
@@ -32,7 +26,7 @@ func CreateTable(table Table) (Table, error) {
 	return table, nil
 }
 
-func UpdateTable(id string, restaurantId uuid.UUID, table UpdateTableInput) (Table, error) {
+func UpdateTable(id string, restaurantId uuid.UUID, table TableInput) (Table, error) {
 	var updatedTable Table
 	if err := DB.Where("id = ? AND restaurant_id = ?", id, restaurantId).
 		First(&updatedTable).Error; err != nil {

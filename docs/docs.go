@@ -1265,7 +1265,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateTableInput"
+                            "$ref": "#/definitions/models.TableInput"
                         }
                     }
                 ],
@@ -1366,7 +1366,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateTableInput"
+                            "$ref": "#/definitions/models.TableInput"
                         }
                     }
                 ],
@@ -1586,27 +1586,6 @@ const docTemplate = `{
                 "phone": {
                     "type": "string",
                     "example": "1234567890"
-                }
-            }
-        },
-        "models.CreateTableInput": {
-            "type": "object",
-            "required": [
-                "name",
-                "restaurantId"
-            ],
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "example": "Bàn 1"
-                },
-                "restaurantId": {
-                    "type": "string",
-                    "example": "1"
-                },
-                "seats": {
-                    "type": "integer",
-                    "example": 4
                 }
             }
         },
@@ -1853,6 +1832,22 @@ const docTemplate = `{
                 }
             }
         },
+        "models.TableInput": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "Bàn 1"
+                },
+                "seats": {
+                    "type": "integer",
+                    "example": 4
+                }
+            }
+        },
         "models.UpdateDishInput": {
             "type": "object",
             "required": [
@@ -1914,22 +1909,6 @@ const docTemplate = `{
                 },
                 "phone": {
                     "type": "string"
-                }
-            }
-        },
-        "models.UpdateTableInput": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "example": "Bàn 1"
-                },
-                "seats": {
-                    "type": "integer",
-                    "example": 4
                 }
             }
         }

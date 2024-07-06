@@ -107,21 +107,6 @@ definitions:
     - password
     - phone
     type: object
-  models.CreateTableInput:
-    properties:
-      name:
-        example: Bàn 1
-        type: string
-      restaurantId:
-        example: "1"
-        type: string
-      seats:
-        example: 4
-        type: integer
-    required:
-    - name
-    - restaurantId
-    type: object
   models.Dish:
     properties:
       createdAt:
@@ -286,6 +271,17 @@ definitions:
     required:
     - name
     type: object
+  models.TableInput:
+    properties:
+      name:
+        example: Bàn 1
+        type: string
+      seats:
+        example: 4
+        type: integer
+    required:
+    - name
+    type: object
   models.UpdateDishInput:
     properties:
       description:
@@ -329,17 +325,6 @@ definitions:
         type: string
       phone:
         type: string
-    type: object
-  models.UpdateTableInput:
-    properties:
-      name:
-        example: Bàn 1
-        type: string
-      seats:
-        example: 4
-        type: integer
-    required:
-    - name
     type: object
 info:
   contact: {}
@@ -1044,7 +1029,7 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/models.CreateTableInput'
+          $ref: '#/definitions/models.TableInput'
       produces:
       - application/json
       responses:
@@ -1126,7 +1111,7 @@ paths:
         name: TableInput
         required: true
         schema:
-          $ref: '#/definitions/models.UpdateTableInput'
+          $ref: '#/definitions/models.TableInput'
       produces:
       - application/json
       responses:
