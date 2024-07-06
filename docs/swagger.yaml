@@ -69,6 +69,19 @@ definitions:
     - name
     - price
     type: object
+  models.CreateOrderInput:
+    properties:
+      orderDetails:
+        items:
+          $ref: '#/definitions/models.OrderDetailInput'
+        type: array
+      tableId:
+        example: 1
+        type: integer
+    required:
+    - orderDetails
+    - tableId
+    type: object
   models.CreateRestaurantInput:
     properties:
       address:
@@ -93,6 +106,21 @@ definitions:
     - name
     - password
     - phone
+    type: object
+  models.CreateTableInput:
+    properties:
+      name:
+        example: Bàn 1
+        type: string
+      restaurantId:
+        example: "1"
+        type: string
+      seats:
+        example: 4
+        type: integer
+    required:
+    - name
+    - restaurantId
     type: object
   models.Dish:
     properties:
@@ -160,6 +188,62 @@ definitions:
     - mineType
     - name
     type: object
+  models.OrderDetailInput:
+    properties:
+      discountIds:
+        example:
+        - 1
+        - 2
+        items:
+          type: integer
+        type: array
+      dishId:
+        example: 1
+        type: integer
+      quantity:
+        example: 2
+        type: integer
+    required:
+    - discountIds
+    - dishId
+    - quantity
+    type: object
+  models.OrderDetailResponse:
+    properties:
+      createdAt:
+        type: string
+      discountPercent:
+        type: number
+      dishId:
+        type: integer
+      dishName:
+        type: string
+      dishPrice:
+        type: number
+      id:
+        type: integer
+      quantity:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  models.OrderResponse:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      orderDetails:
+        items:
+          $ref: '#/definitions/models.OrderDetailResponse'
+        type: array
+      status:
+        type: integer
+      tableId:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
   models.Restaurant:
     properties:
       address:
@@ -184,6 +268,24 @@ definitions:
     - name
     - phone
     type: object
+  models.Table:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      restaurantId:
+        type: string
+      seats:
+        description: optional
+        type: integer
+      updatedAt:
+        type: string
+    required:
+    - name
+    type: object
   models.UpdateDishInput:
     properties:
       description:
@@ -202,6 +304,16 @@ definitions:
     - name
     - price
     type: object
+  models.UpdateOrderInput:
+    properties:
+      orderDetails:
+        items:
+          $ref: '#/definitions/models.OrderDetailInput'
+        type: array
+      status:
+        example: 1
+        type: integer
+    type: object
   models.UpdateRestaurantInput:
     properties:
       address:
@@ -217,6 +329,17 @@ definitions:
         type: string
       phone:
         type: string
+    type: object
+  models.UpdateTableInput:
+    properties:
+      name:
+        example: Bàn 1
+        type: string
+      seats:
+        example: 4
+        type: integer
+    required:
+    - name
     type: object
 info:
   contact: {}
@@ -706,6 +829,139 @@ paths:
       - BearerAuth: []
       tags:
       - Files
+  /orders:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Table ID
+        in: query
+        name: tableId
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.OrderResponse'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - Orders
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Order Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateOrderInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.OrderResponse'
+              type: object
+      summary: Use for both restaurant and client
+      tags:
+      - Orders
+  /orders/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - Orders
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.OrderResponse'
+              type: object
+      summary: Use for both restaurant and client
+      tags:
+      - Orders
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Order Data
+        in: body
+        name: OrderInput
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateOrderInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.OrderResponse'
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - Orders
   /restaurants:
     patch:
       consumes:
@@ -757,6 +1013,136 @@ paths:
               type: object
       tags:
       - Restaurants
+  /tables:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Table'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - Tables
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Table Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateTableInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Table'
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - Tables
+  /tables/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Table ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - Tables
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Table ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Table'
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - Tables
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Table ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Table Data
+        in: body
+        name: TableInput
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateTableInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Table'
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - Tables
 schemes:
 - http
 - https

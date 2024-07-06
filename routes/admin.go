@@ -10,7 +10,7 @@ import (
 func addAdminRoutes(r *gin.RouterGroup) {
 	group := r.Group("admin")
 
-	group.Use(middlewares.JWTAuth())
+	group.Use(middlewares.AuthGuard())
 	{
 		group.GET("restaurants", controllers.GetRestaurants)
 		group.GET("restaurants/:id", controllers.GetRestaurant)

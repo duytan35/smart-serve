@@ -101,9 +101,10 @@ type Table struct {
 
 type Order struct {
 	Model
-	TableID uint  `json:"tableId" gorm:"index;" binding:"required"`
-	Status  uint  `json:"status" gorm:"type:TINYINT;not null;default:0"` // 0,1,2,3
-	Table   Table `json:"-" gorm:"foreignKey:TableID;references:ID;constraint:OnDelete:SET NULL"`
+	TableID      uint          `json:"tableId" gorm:"index;" binding:"required"`
+	Status       uint          `json:"status" gorm:"type:TINYINT;not null;default:0"` // 0,1,2,3
+	Table        Table         `json:"-" gorm:"foreignKey:TableID;references:ID;constraint:OnDelete:SET NULL"`
+	OrderDetails []OrderDetail `json:"orderDetails" gorm:"foreignKey:OrderID;references:ID;constraint:OnDelete:CASCADE"`
 }
 
 type OrderDetail struct {
@@ -111,9 +112,9 @@ type OrderDetail struct {
 	OrderID         uint    `json:"orderId" gorm:"index;not null" binding:"required"`
 	DishID          uint    `json:"dishId" gorm:"index;not null" binding:"required"`
 	Quantity        uint    `json:"quantity" gorm:"not null" binding:"required"`
+	DiscountPercent float64 `json:"discountPercent" gorm:"not null;default 0" binding:"required"` // value of current discount
 	Order           Order   `json:"-" gorm:"foreignKey:OrderID;references:ID;constraint:OnDelete:CASCADE"`
-	Dish            Dish    `json:"-" gorm:"foreignKey:DishID;references:ID;constraint:OnDelete:CASCADE"`
-	DiscountPercent float64 `json:"discountPercent" gorm:"not null" binding:"required"` // value of current discount
+	Dish            Dish    `json:"dish" gorm:"foreignKey:DishID;references:ID;constraint:OnDelete:CASCADE"`
 }
 
 // apply only create

@@ -56,7 +56,7 @@ func SignIn(c *gin.Context) {
 		return
 	}
 
-	accessToken, _ := utils.GenerateJWT(restaurant.ID.String())
+	accessToken, _ := utils.GenerateJWT(restaurant.ID.String(), restaurant.Email)
 
 	c.JSON(http.StatusOK, Response{
 		Success: true,
