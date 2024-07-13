@@ -29,8 +29,6 @@ definitions:
         type: string
       avatar:
         type: string
-      createdAt:
-        type: string
       email:
         type: string
       id:
@@ -39,13 +37,6 @@ definitions:
         type: string
       phone:
         type: string
-      updatedAt:
-        type: string
-    required:
-    - address
-    - email
-    - name
-    - phone
     type: object
   models.CreateDishInput:
     properties:
@@ -55,6 +46,13 @@ definitions:
       dishGroupId:
         example: "1"
         type: string
+      imageIds:
+        example:
+        - 7c5a4b8f-fcf6-48d3-b21a-d81ebdfdf6f1
+        - 1566e532-72d4-49d4-8fca-c9142816006a
+        items:
+          type: string
+        type: array
       name:
         example: Phở
         type: string
@@ -66,6 +64,7 @@ definitions:
         type: integer
     required:
     - dishGroupId
+    - imageIds
     - name
     - price
     type: object
@@ -118,6 +117,10 @@ definitions:
         type: integer
       id:
         type: integer
+      imageIds:
+        items:
+          type: string
+        type: array
       name:
         type: string
       price:
@@ -136,6 +139,10 @@ definitions:
     properties:
       createdAt:
         type: string
+      dishes:
+        items:
+          $ref: '#/definitions/models.Dish'
+        type: array
       id:
         type: integer
       name:
@@ -155,6 +162,19 @@ definitions:
     required:
     - name
     type: object
+  models.DishGroupResponse:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      restaurantId:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   models.File:
     properties:
       createdAt:
@@ -172,6 +192,47 @@ definitions:
     required:
     - mineType
     - name
+    type: object
+  models.MenuDish:
+    properties:
+      description:
+        description: optional
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      price:
+        type: number
+    required:
+    - name
+    - price
+    type: object
+  models.MenuDishGroup:
+    properties:
+      dishes:
+        items:
+          $ref: '#/definitions/models.MenuDish'
+        type: array
+      groupId:
+        type: integer
+      groupName:
+        type: string
+    type: object
+  models.MenuResponse:
+    properties:
+      menu:
+        items:
+          $ref: '#/definitions/models.MenuDishGroup'
+        type: array
+      restaurantAddress:
+        type: string
+      restaurantAvatar:
+        type: string
+      restaurantId:
+        type: string
+      restaurantName:
+        type: string
     type: object
   models.OrderDetailInput:
     properties:
@@ -229,13 +290,11 @@ definitions:
       updatedAt:
         type: string
     type: object
-  models.Restaurant:
+  models.RestaurantResponse:
     properties:
       address:
         type: string
       avatar:
-        type: string
-      createdAt:
         type: string
       email:
         type: string
@@ -245,13 +304,6 @@ definitions:
         type: string
       phone:
         type: string
-      updatedAt:
-        type: string
-    required:
-    - address
-    - email
-    - name
-    - phone
     type: object
   models.Table:
     properties:
@@ -287,6 +339,13 @@ definitions:
       description:
         example: Phở bò Việt Nam
         type: string
+      imageIds:
+        example:
+        - 7c5a4b8f-fcf6-48d3-b21a-d81ebdfdf6f1
+        - 1566e532-72d4-49d4-8fca-c9142816006a
+        items:
+          type: string
+        type: array
       name:
         example: Phở
         type: string
@@ -297,6 +356,7 @@ definitions:
         example: 1
         type: integer
     required:
+    - imageIds
     - name
     - price
     type: object
@@ -347,7 +407,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/models.Restaurant'
+                    $ref: '#/definitions/models.RestaurantResponse'
                   type: array
               type: object
       security:
@@ -399,7 +459,7 @@ paths:
             - $ref: '#/definitions/controllers.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/models.Restaurant'
+                  $ref: '#/definitions/models.RestaurantResponse'
               type: object
       security:
       - BearerAuth: []
@@ -419,7 +479,7 @@ paths:
             - $ref: '#/definitions/controllers.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/models.Restaurant'
+                  $ref: '#/definitions/models.RestaurantResponse'
               type: object
       security:
       - BearerAuth: []
@@ -450,6 +510,56 @@ paths:
               type: object
       tags:
       - Auth
+  /client/menu:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Restaurant ID
+        in: query
+        name: restaurantId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.MenuResponse'
+              type: object
+      tags:
+      - Client
+  /client/order:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Table ID
+        in: query
+        name: tableId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controllers.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Table'
+              type: object
+      security:
+      - BearerAuth: []
+      tags:
+      - Client
   /dish-groups:
     get:
       consumes:
@@ -492,7 +602,7 @@ paths:
             - $ref: '#/definitions/controllers.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/models.DishGroup'
+                  $ref: '#/definitions/models.DishGroupResponse'
               type: object
       security:
       - BearerAuth: []
@@ -574,7 +684,7 @@ paths:
             - $ref: '#/definitions/controllers.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/models.DishGroup'
+                  $ref: '#/definitions/models.DishGroupResponse'
               type: object
       security:
       - BearerAuth: []
@@ -968,7 +1078,7 @@ paths:
             - $ref: '#/definitions/controllers.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/models.Restaurant'
+                  $ref: '#/definitions/models.RestaurantResponse'
               type: object
       security:
       - BearerAuth: []
@@ -994,7 +1104,7 @@ paths:
             - $ref: '#/definitions/controllers.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/models.Restaurant'
+                  $ref: '#/definitions/models.RestaurantResponse'
               type: object
       tags:
       - Restaurants

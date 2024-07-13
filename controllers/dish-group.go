@@ -13,7 +13,7 @@ import (
 // @Accept  json
 // @Produce  json
 // @Param data body models.DishGroupInput true "DishGroup Data"
-// @Success 201 {object} Response{data=models.DishGroup}
+// @Success 201 {object} Response{data=models.DishGroupResponse}
 // @Router /dish-groups [post]
 // @Security BearerAuth
 func CreateDishGroup(c *gin.Context) {
@@ -95,7 +95,7 @@ func GetDishGroups(c *gin.Context) {
 // @Produce  json
 // @Param id path string true "DishGroup ID"
 // @Param dishGroup body models.DishGroupInput true "DishGroup Data"
-// @Success 200 {object} Response{data=models.DishGroup}
+// @Success 200 {object} Response{data=models.DishGroupResponse}
 // @Router /dish-groups/{id} [put]
 // @Security BearerAuth
 func UpdateDishGroup(c *gin.Context) {

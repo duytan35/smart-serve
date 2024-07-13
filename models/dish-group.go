@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -10,9 +11,19 @@ type DishGroupInput struct {
 	Name string `json:"name" binding:"required" example:"Noodles"`
 }
 
+type DishGroupResponse struct {
+	ID           uint      `json:"id"`
+	Name         string    `json:"name"`
+	RestaurantID string    `json:"restaurantId"`
+	CreatedAt    time.Time `json:"createdAt"`
+	UpdatedAt    time.Time `json:"updatedAt"`
+}
+
 func GetDishGroups(restaurantId string) []DishGroup {
 	var dishGroups []DishGroup
-	DB.Model(&DishGroup{}).Where("restaurant_id = ?", restaurantId).Find(&dishGroups)
+	DB.
+		Preload("Dishes").
+		Where("restaurant_id = ?", restaurantId).Find(&dishGroups)
 
 	return dishGroups
 }
@@ -44,7 +55,7 @@ func UpdateDishGroup(id string, restaurantId uuid.UUID, dishGroup DishGroupInput
 
 func GetDishGroup(id string) (DishGroup, error) {
 	var dishGroup DishGroup
-	if err := DB.Where("id = ?", id).First(&dishGroup).Error; err != nil {
+	if err := DB.Preload("Dishes").Where("id = ?", id).First(&dishGroup).Error; err != nil {
 		return DishGroup{}, err
 	}
 

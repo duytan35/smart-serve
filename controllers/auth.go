@@ -16,7 +16,7 @@ type SignInData struct {
 }
 
 type SignInResponse struct {
-	models.Restaurant
+	models.RestaurantResponse
 	AccessToken string `json:"accessToken"`
 }
 
@@ -62,7 +62,14 @@ func SignIn(c *gin.Context) {
 		Success: true,
 		Data: SignInResponse{
 			AccessToken: accessToken,
-			Restaurant:  restaurant,
+			RestaurantResponse: models.RestaurantResponse{
+				ID:      restaurant.ID.String(),
+				Name:    restaurant.Name,
+				Phone:   restaurant.Phone,
+				Email:   restaurant.Email,
+				Address: restaurant.Address,
+				Avatar:  restaurant.Avatar,
+			},
 		},
 	})
 }
@@ -70,7 +77,7 @@ func SignIn(c *gin.Context) {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Success 200 {object} Response{data=models.Restaurant}
+// @Success 200 {object} Response{data=models.RestaurantResponse}
 // @Router /auth/me [get]
 // @Security BearerAuth
 func GetMe(c *gin.Context) {

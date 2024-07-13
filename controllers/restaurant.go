@@ -12,7 +12,7 @@ import (
 // @Accept  json
 // @Produce  json
 // @Param data body models.CreateRestaurantInput true "Restaurant Data"
-// @Success 201 {object} Response{data=models.Restaurant}
+// @Success 201 {object} Response{data=models.RestaurantResponse}
 // @Router /restaurants [post]
 func CreateRestaurant(c *gin.Context) {
 	var createRestaurant models.CreateRestaurantInput
@@ -54,7 +54,7 @@ func CreateRestaurant(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param restaurant body models.UpdateRestaurantInput true "Restaurant Data"
-// @Success 200 {object} Response{data=models.Restaurant}
+// @Success 200 {object} Response{data=models.RestaurantResponse}
 // @Router /restaurants [patch]
 // @Security BearerAuth
 func UpdateRestaurant(c *gin.Context) {

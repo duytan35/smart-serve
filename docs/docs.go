@@ -45,7 +45,7 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/models.Restaurant"
+                                                "$ref": "#/definitions/models.RestaurantResponse"
                                             }
                                         }
                                     }
@@ -93,7 +93,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/models.Restaurant"
+                                            "$ref": "#/definitions/models.RestaurantResponse"
                                         }
                                     }
                                 }
@@ -176,7 +176,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/models.Restaurant"
+                                            "$ref": "#/definitions/models.RestaurantResponse"
                                         }
                                     }
                                 }
@@ -221,6 +221,95 @@ const docTemplate = `{
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/controllers.SignInResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/client/menu": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Restaurant ID",
+                        "name": "restaurantId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controllers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.MenuResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/client/order": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Table ID",
+                        "name": "tableId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controllers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Table"
                                         }
                                     }
                                 }
@@ -308,7 +397,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/models.DishGroup"
+                                            "$ref": "#/definitions/models.DishGroupResponse"
                                         }
                                     }
                                 }
@@ -409,7 +498,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/models.DishGroup"
+                                            "$ref": "#/definitions/models.DishGroupResponse"
                                         }
                                     }
                                 }
@@ -1146,7 +1235,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/models.Restaurant"
+                                            "$ref": "#/definitions/models.RestaurantResponse"
                                         }
                                     }
                                 }
@@ -1193,7 +1282,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/models.Restaurant"
+                                            "$ref": "#/definitions/models.RestaurantResponse"
                                         }
                                     }
                                 }
@@ -1471,12 +1560,6 @@ const docTemplate = `{
         },
         "controllers.SignInResponse": {
             "type": "object",
-            "required": [
-                "address",
-                "email",
-                "name",
-                "phone"
-            ],
             "properties": {
                 "accessToken": {
                     "type": "string"
@@ -1485,9 +1568,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "avatar": {
-                    "type": "string"
-                },
-                "createdAt": {
                     "type": "string"
                 },
                 "email": {
@@ -1501,9 +1581,6 @@ const docTemplate = `{
                 },
                 "phone": {
                     "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
                 }
             }
         },
@@ -1511,6 +1588,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "dishGroupId",
+                "imageIds",
                 "name",
                 "price"
             ],
@@ -1522,6 +1600,16 @@ const docTemplate = `{
                 "dishGroupId": {
                     "type": "string",
                     "example": "1"
+                },
+                "imageIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "7c5a4b8f-fcf6-48d3-b21a-d81ebdfdf6f1",
+                        "1566e532-72d4-49d4-8fca-c9142816006a"
+                    ]
                 },
                 "name": {
                     "type": "string",
@@ -1610,6 +1698,12 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "imageIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "name": {
                     "type": "string"
                 },
@@ -1633,6 +1727,12 @@ const docTemplate = `{
             "properties": {
                 "createdAt": {
                     "type": "string"
+                },
+                "dishes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Dish"
+                    }
                 },
                 "id": {
                     "type": "integer"
@@ -1660,6 +1760,26 @@ const docTemplate = `{
                 }
             }
         },
+        "models.DishGroupResponse": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "restaurantId": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "models.File": {
             "type": "object",
             "required": [
@@ -1683,6 +1803,68 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.MenuDish": {
+            "type": "object",
+            "required": [
+                "name",
+                "price"
+            ],
+            "properties": {
+                "description": {
+                    "description": "optional",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.MenuDishGroup": {
+            "type": "object",
+            "properties": {
+                "dishes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.MenuDish"
+                    }
+                },
+                "groupId": {
+                    "type": "integer"
+                },
+                "groupName": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.MenuResponse": {
+            "type": "object",
+            "properties": {
+                "menu": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.MenuDishGroup"
+                    }
+                },
+                "restaurantAddress": {
+                    "type": "string"
+                },
+                "restaurantAvatar": {
+                    "type": "string"
+                },
+                "restaurantId": {
+                    "type": "string"
+                },
+                "restaurantName": {
                     "type": "string"
                 }
             }
@@ -1770,22 +1952,13 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Restaurant": {
+        "models.RestaurantResponse": {
             "type": "object",
-            "required": [
-                "address",
-                "email",
-                "name",
-                "phone"
-            ],
             "properties": {
                 "address": {
                     "type": "string"
                 },
                 "avatar": {
-                    "type": "string"
-                },
-                "createdAt": {
                     "type": "string"
                 },
                 "email": {
@@ -1798,9 +1971,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phone": {
-                    "type": "string"
-                },
-                "updatedAt": {
                     "type": "string"
                 }
             }
@@ -1851,6 +2021,7 @@ const docTemplate = `{
         "models.UpdateDishInput": {
             "type": "object",
             "required": [
+                "imageIds",
                 "name",
                 "price"
             ],
@@ -1858,6 +2029,16 @@ const docTemplate = `{
                 "description": {
                     "type": "string",
                     "example": "Phở bò Việt Nam"
+                },
+                "imageIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "7c5a4b8f-fcf6-48d3-b21a-d81ebdfdf6f1",
+                        "1566e532-72d4-49d4-8fca-c9142816006a"
+                    ]
                 },
                 "name": {
                     "type": "string",

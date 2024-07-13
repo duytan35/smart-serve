@@ -49,7 +49,8 @@ func CreateDish(c *gin.Context) {
 		Status:      createDish.Status,
 	}
 
-	res, err := models.CreateDish(dish)
+	newDish, err := models.CreateDish(dish, createDish.ImageIds)
+	newDish.ImageIds = createDish.ImageIds
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Response{
@@ -62,7 +63,7 @@ func CreateDish(c *gin.Context) {
 	c.JSON(http.StatusCreated, Response{
 		Success: true,
 		Message: "Dish created successfully",
-		Data:    res,
+		Data:    newDish,
 	})
 }
 
@@ -138,9 +139,9 @@ func UpdateDish(c *gin.Context) {
 
 	id := c.Param("id")
 
-	var dishInput models.UpdateDishInput
+	var updateDishInput models.UpdateDishInput
 
-	if err := c.ShouldBindJSON(&dishInput); err != nil {
+	if err := c.ShouldBindJSON(&updateDishInput); err != nil {
 		c.JSON(http.StatusBadRequest, Response{
 			Success: false,
 			Message: err.Error(),
@@ -148,7 +149,7 @@ func UpdateDish(c *gin.Context) {
 		return
 	}
 
-	updatedDish, err := models.UpdateDish(id, restaurantId, dishInput)
+	updatedDish, err := models.UpdateDish(id, restaurantId, updateDishInput)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Response{
 			Success: false,
@@ -156,6 +157,7 @@ func UpdateDish(c *gin.Context) {
 		})
 		return
 	}
+	updatedDish.ImageIds = updateDishInput.ImageIds
 
 	c.JSON(http.StatusOK, Response{
 		Success: true,

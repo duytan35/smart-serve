@@ -6,9 +6,12 @@ import (
 	"smart-serve/models"
 	"smart-serve/routes"
 	"smart-serve/utils"
+	"smart-serve/validators"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
 
 	"smart-serve/docs"
@@ -35,6 +38,12 @@ func configApp(r *gin.Engine) {
 	models.ConnectDB()
 	models.Migrate()
 	utils.InitS3Uploader()
+
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		if err := validators.RegisterCustomValidations(v); err != nil {
+			panic(err)
+		}
+	}
 
 	config := cors.DefaultConfig()
 	config.AllowCredentials = true
