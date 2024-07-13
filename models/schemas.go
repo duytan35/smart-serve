@@ -38,6 +38,8 @@ type Restaurant struct {
 	Address  string    `json:"address" gorm:"not null" binding:"required"`
 	Password string    `json:"-" gorm:"not null" binding:"required,min=8"`
 	Avatar   string    `json:"avatar"`
+
+	DishGroup []DishGroup `json:"dishGroups" gorm:"foreignKey:RestaurantID;references:ID;constraint:OnDelete:CASCADE"`
 }
 
 type File struct {
@@ -55,6 +57,8 @@ type DishGroup struct {
 	RestaurantID uuid.UUID  `json:"restaurantId" gorm:"uniqueIndex:idx_name_restaurant;type:char(36);not null"`
 	Name         string     `json:"name" gorm:"uniqueIndex:idx_name_restaurant;type:char(255);not null" binding:"required"`
 	Restaurant   Restaurant `json:"-" gorm:"foreignKey:RestaurantID;references:ID;constraint:OnDelete:CASCADE"`
+
+	Dishes []Dish `json:"dishes" gorm:"foreignKey:DishGroupID;references:ID;constraint:OnDelete:CASCADE"`
 }
 
 type Dish struct {
@@ -65,6 +69,9 @@ type Dish struct {
 	Price       float64   `json:"price" gorm:"not null" binding:"required"`
 	Status      uint      `json:"status" gorm:"TINYINT;not null;default 1"` // 0: inactive, 1: active
 	DishGroup   DishGroup `json:"-" gorm:"foreignKey:DishGroupID;references:ID;constraint:OnDelete:CASCADE"`
+
+	Images   []DishImage `json:"-" gorm:"foreignKey:DishID;references:ID"`
+	ImageIds []uuid.UUID `json:"imageIds" gorm:"-"`
 }
 
 type DishImage struct {
@@ -72,7 +79,7 @@ type DishImage struct {
 	DishID uint      `json:"dishId" gorm:"index;not null" binding:"required"`
 	FileID uuid.UUID `json:"fileId" gorm:"index;not null" binding:"required"`
 	Dish   Dish      `json:"-" gorm:"foreignKey:DishID;references:ID;constraint:OnDelete:CASCADE"`
-	File   File      `json:"-" gorm:"foreignKey:FileID;references:ID;constraint:OnDelete:CASCADE"`
+	File   File      `json:"-" gorm:"foreignKey:FileID;references:ID"`
 }
 
 type Discount struct {
@@ -101,9 +108,10 @@ type Table struct {
 
 type Order struct {
 	Model
-	TableID      uint          `json:"tableId" gorm:"index;" binding:"required"`
-	Status       uint          `json:"status" gorm:"type:TINYINT;not null;default:0"` // 0,1,2,3
-	Table        Table         `json:"-" gorm:"foreignKey:TableID;references:ID;constraint:OnDelete:SET NULL"`
+	TableID uint  `json:"tableId" gorm:"index;" binding:"required"`
+	Status  uint  `json:"status" gorm:"type:TINYINT;not null;default:0"` // 0,1,2,3
+	Table   Table `json:"-" gorm:"foreignKey:TableID;references:ID;constraint:OnDelete:SET NULL"`
+
 	OrderDetails []OrderDetail `json:"orderDetails" gorm:"foreignKey:OrderID;references:ID;constraint:OnDelete:CASCADE"`
 }
 
@@ -129,4 +137,14 @@ func (r *Restaurant) BeforeSave(tx *gorm.DB) (err error) {
 	r.Password = string(hashedPassword)
 
 	return nil
+}
+
+func (d *Dish) AfterFind(tx *gorm.DB) (err error) {
+	ImageIds := []uuid.UUID{}
+	for _, image := range d.Images {
+		ImageIds = append(ImageIds, image.FileID)
+	}
+	d.ImageIds = ImageIds
+
+	return
 }

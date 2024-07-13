@@ -21,6 +21,7 @@ func Config(r *gin.Engine) {
 	addDishRoutes(v1)
 	addTableRoutes(v1)
 	addOrderRoutes(v1)
+	addClientRoutes(v1)
 
 	v1.GET("/docs", func(c *gin.Context) { c.Redirect(http.StatusFound, "./docs/index.html") })
 	v1.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

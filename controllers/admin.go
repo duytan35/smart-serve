@@ -10,7 +10,7 @@ import (
 // @Tags Admin
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} Response{data=[]models.Restaurant}
+// @Success 200 {object} Response{data=[]models.RestaurantResponse}
 // @Router /admin/restaurants [get]
 // @Security BearerAuth
 func GetRestaurants(c *gin.Context) {
@@ -25,7 +25,7 @@ func GetRestaurants(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param id path string true "Restaurant ID"
-// @Success 200 {object} Response{data=models.Restaurant}
+// @Success 200 {object} Response{data=models.RestaurantResponse}
 // @Router /admin/restaurants/{id} [get]
 // @Security BearerAuth
 func GetRestaurant(c *gin.Context) {

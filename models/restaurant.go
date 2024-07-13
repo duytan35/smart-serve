@@ -21,6 +21,15 @@ type UpdateRestaurantInput struct {
 	Avatar   string `json:"avatar" binding:"omitempty"`
 }
 
+type RestaurantResponse struct {
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	Phone   string `json:"phone"`
+	Email   string `json:"email"`
+	Address string `json:"address"`
+	Avatar  string `json:"avatar"`
+}
+
 func GetRestaurants() []Restaurant {
 	var restaurants []Restaurant
 	DB.Model(&Restaurant{}).Find(&restaurants)
