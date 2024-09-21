@@ -309,7 +309,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/models.Table"
+                                            "$ref": "#/definitions/models.OrderResponse"
                                         }
                                     }
                                 }
@@ -1059,6 +1059,62 @@ const docTemplate = `{
                 }
             }
         },
+        "/orders/order-details/{id}": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Orders"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Order Detail ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Order Step Data",
+                        "name": "UpdateOrderStepInput",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateOrderStepInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controllers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/orders/{id}": {
             "get": {
                 "consumes": [
@@ -1283,6 +1339,55 @@ const docTemplate = `{
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/models.RestaurantResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/restaurants/steps": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Restaurants"
+                ],
+                "parameters": [
+                    {
+                        "description": "Steps Data",
+                        "name": "restaurant",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateStepsInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controllers.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
                                         }
                                     }
                                 }
@@ -1581,6 +1686,12 @@ const docTemplate = `{
                 },
                 "phone": {
                     "type": "string"
+                },
+                "steps": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.OrderStep"
+                    }
                 }
             }
         },
@@ -1921,6 +2032,9 @@ const docTemplate = `{
                 "quantity": {
                     "type": "integer"
                 },
+                "step": {
+                    "type": "integer"
+                },
                 "updatedAt": {
                     "type": "string"
                 }
@@ -1942,9 +2056,49 @@ const docTemplate = `{
                     }
                 },
                 "status": {
-                    "type": "integer"
+                    "$ref": "#/definitions/models.OrderStatus"
                 },
                 "tableId": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.OrderStatus": {
+            "type": "string",
+            "enum": [
+                "InProgress",
+                "Complete",
+                "Cancel"
+            ],
+            "x-enum-varnames": [
+                "StatusInProgress",
+                "StatusComplete",
+                "StatusCancel"
+            ]
+        },
+        "models.OrderStep": {
+            "type": "object",
+            "required": [
+                "name",
+                "step"
+            ],
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "restaurantId": {
+                    "type": "string"
+                },
+                "step": {
                     "type": "integer"
                 },
                 "updatedAt": {
@@ -1972,6 +2126,12 @@ const docTemplate = `{
                 },
                 "phone": {
                     "type": "string"
+                },
+                "steps": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.OrderStep"
+                    }
                 }
             }
         },
@@ -2064,6 +2224,22 @@ const docTemplate = `{
                     }
                 },
                 "status": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.OrderStatus"
+                        }
+                    ],
+                    "example": "InProgress"
+                }
+            }
+        },
+        "models.UpdateOrderStepInput": {
+            "type": "object",
+            "required": [
+                "step"
+            ],
+            "properties": {
+                "step": {
                     "type": "integer",
                     "example": 1
                 }
@@ -2090,6 +2266,20 @@ const docTemplate = `{
                 },
                 "phone": {
                     "type": "string"
+                }
+            }
+        },
+        "models.UpdateStepsInput": {
+            "type": "object",
+            "required": [
+                "steps"
+            ],
+            "properties": {
+                "steps": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         }

@@ -1,6 +1,10 @@
 package models
 
-import "github.com/google/uuid"
+import (
+	"strconv"
+
+	"github.com/google/uuid"
+)
 
 type MenuResponse struct {
 	RestaurantID      uuid.UUID `json:"restaurantId"`
@@ -62,4 +66,33 @@ func GetMenu(restaurantId string) MenuResponse {
 	}
 
 	return menuResponse
+}
+
+func GetOrderAtTable(tableId string) *OrderResponse {
+	var order Order
+
+	if err := DB.Where("table_id = ? AND status = ?", tableId, "InProgress").
+		Order("created_at DESC").
+		First(&order).Error; err != nil {
+		return nil
+	}
+
+	orderResponse, err := GetOrder(strconv.FormatUint(uint64(order.ID), 10))
+	if err != nil {
+		return nil
+	}
+
+	return &orderResponse
+}
+
+func GetOrderIdAtTable(tableId string) *uint {
+	var order Order
+
+	if err := DB.Where("table_id = ? AND status = ?", tableId, "InProgress").
+		Order("created_at DESC").
+		First(&order).Error; err != nil {
+		return nil
+	}
+
+	return &order.ID
 }

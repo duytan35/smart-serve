@@ -165,3 +165,39 @@ func DeleteOrder(c *gin.Context) {
 		Message: "Order deleted successfully",
 	})
 }
+
+// @Tags Orders
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Order Detail ID"
+// @Param UpdateOrderStepInput body models.UpdateOrderStepInput true "Order Step Data"
+// @Success 200 {object} Response{data=nil}
+// @Router /orders/order-details/{id} [patch]
+// @Security BearerAuth
+func UpdateOrderDetailStep(c *gin.Context) {
+	restaurantId, _ := uuid.Parse(c.GetString("restaurantId"))
+	orderDetailId := c.Param("id")
+
+	var updateOrderStepInput models.UpdateOrderStepInput
+
+	if err := c.ShouldBindJSON(&updateOrderStepInput); err != nil {
+		c.JSON(http.StatusBadRequest, Response{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	if err := models.UpdateOrderDetailStep(restaurantId, orderDetailId, updateOrderStepInput.Step); err != nil {
+		c.JSON(http.StatusBadRequest, Response{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, Response{
+		Success: true,
+		Message: "Order step updated successfully",
+	})
+}

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"smart-serve/models"
+	"strconv"
 
 	"net/http"
 
@@ -38,25 +39,26 @@ func GetMenu(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param tableId query string true "Table ID"
-// @Success 200 {object} Response{data=models.Table}
+// @Success 200 {object} Response{data=models.OrderResponse}
 // @Router /client/order [get]
 // @Security BearerAuth
 func GetOrderByClient(c *gin.Context) {
+	tableId := c.Query("tableId")
 
-	// restaurantId := c.GetString("tableId")
-	// id := c.Param("id")
+	orderId := models.GetOrderIdAtTable(tableId)
 
-	// dish, err := models.GetTable(id, restaurantId)
-	// if err != nil {
-	// 	c.JSON(http.StatusNotFound, Response{
-	// 		Success: false,
-	// 		Message: err.Error(),
-	// 	})
-	// 	return
-	// }
+	if orderId == nil {
+		c.JSON(http.StatusNotFound, Response{
+			Success: false,
+			Message: "No Order found",
+		})
+		return
+	}
 
-	// c.JSON(http.StatusOK, Response{
-	// 	Success: true,
-	// 	Data:    dish,
-	// })
+	order, _ := models.GetOrder(strconv.FormatUint(uint64(*orderId), 10))
+
+	c.JSON(http.StatusOK, Response{
+		Success: true,
+		Data:    order,
+	})
 }
