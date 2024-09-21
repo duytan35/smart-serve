@@ -1,7 +1,11 @@
 package models
 
 import (
+	"fmt"
+
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type CreateRestaurantInput struct {
@@ -22,12 +26,17 @@ type UpdateRestaurantInput struct {
 }
 
 type RestaurantResponse struct {
-	ID      string `json:"id"`
-	Name    string `json:"name"`
-	Phone   string `json:"phone"`
-	Email   string `json:"email"`
-	Address string `json:"address"`
-	Avatar  string `json:"avatar"`
+	ID      string      `json:"id"`
+	Name    string      `json:"name"`
+	Phone   string      `json:"phone"`
+	Email   string      `json:"email"`
+	Address string      `json:"address"`
+	Avatar  string      `json:"avatar"`
+	Steps   []OrderStep `json:"steps"`
+}
+
+type UpdateStepsInput struct {
+	Steps []string `json:"steps" binding:"required"`
 }
 
 func GetRestaurants() []Restaurant {
@@ -38,7 +47,30 @@ func GetRestaurants() []Restaurant {
 }
 
 func CreateRestaurant(restaurant Restaurant) (Restaurant, error) {
-	if err := DB.Create(&restaurant).Error; err != nil {
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(&restaurant).Error; err != nil {
+			return err
+		}
+
+		if restaurant.ID == uuid.Nil {
+			return fmt.Errorf("restaurant ID not generated")
+		}
+
+		defaultSteps := []OrderStep{
+			{Step: 0, Name: "New", RestaurantID: restaurant.ID},
+			{Step: 1, Name: "Confirmed", RestaurantID: restaurant.ID},
+			{Step: 2, Name: "InProgress", RestaurantID: restaurant.ID},
+			{Step: 3, Name: "Done", RestaurantID: restaurant.ID},
+		}
+
+		if err := CreateOrderSteps(defaultSteps); err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
 		return Restaurant{}, err
 	}
 
@@ -68,7 +100,10 @@ func UpdateRestaurant(id string, restaurant UpdateRestaurantInput) (Restaurant, 
 
 func GetRestaurant(id string) (Restaurant, error) {
 	var restaurant Restaurant
-	if err := DB.Where("id = ?", id).First(&restaurant).Error; err != nil {
+
+	if err := DB.Where("id = ?", id).
+		Preload("Steps").
+		First(&restaurant).Error; err != nil {
 		return Restaurant{}, err
 	}
 
@@ -94,4 +129,16 @@ func GetRestaurantByEmail(email string) (Restaurant, error) {
 	}
 
 	return restaurant, nil
+}
+
+func RemoveAllOrderSteps(restaurantId string) error {
+	return DB.Where("restaurant_id = ?", restaurantId).Delete(&OrderStep{}).Error
+}
+
+func CreateOrderSteps(steps []OrderStep) error {
+	if err := DB.Create(&steps).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

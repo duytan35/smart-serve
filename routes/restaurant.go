@@ -15,5 +15,6 @@ func addRestaurantRoutes(r *gin.RouterGroup) {
 	group.Use(middlewares.AuthGuard())
 	{
 		group.PATCH("/", controllers.UpdateRestaurant)
+		group.PATCH("/steps", controllers.UpdateSteps)
 	}
 }

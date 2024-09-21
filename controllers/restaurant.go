@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 // @Tags Restaurants
@@ -83,4 +84,54 @@ func UpdateRestaurant(c *gin.Context) {
 		Message: "Restaurant updated successfully",
 		Data:    updatedRestaurant,
 	})
+}
+
+// @Tags Restaurants
+// @Accept  json
+// @Produce  json
+// @Param restaurant body models.UpdateStepsInput true "Steps Data"
+// @Success 200 {object} Response{data=nil}
+// @Router /restaurants/steps [patch]
+// @Security BearerAuth
+func UpdateSteps(c *gin.Context) {
+	restaurantId := c.GetString("restaurantId")
+	restaurantUUID, _ := uuid.Parse(restaurantId)
+	var input models.UpdateStepsInput
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, Response{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	if err := models.RemoveAllOrderSteps(restaurantId); err != nil {
+		c.JSON(http.StatusInternalServerError, Response{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	var newSteps []models.OrderStep
+	for i, stepName := range input.Steps {
+		newSteps = append(newSteps, models.OrderStep{
+			RestaurantID: restaurantUUID,
+			Step:         uint(i),
+			Name:         stepName,
+		})
+	}
+
+	if err := models.CreateOrderSteps(newSteps); err != nil {
+		c.JSON(http.StatusInternalServerError, Response{
+			Success: false,
+			Message: err.Error(),
+		})
+
+		c.JSON(http.StatusOK, Response{
+			Success: true,
+			Message: "Steps updated successfully",
+		})
+	}
 }

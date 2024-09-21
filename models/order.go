@@ -1,6 +1,7 @@
 package models
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -13,19 +14,24 @@ type CreateOrderInput struct {
 }
 
 type UpdateOrderInput struct {
-	Status       uint               `json:"status" example:"1"`
+	Status       OrderStatus        `json:"status" example:"InProgress"  binding:"orderStatus"`
 	OrderDetails []OrderDetailInput `json:"orderDetails" binding:"dive"`
+}
+
+type UpdateOrderStepInput struct {
+	Step uint `json:"step" example:"1" binding:"required"`
 }
 
 type OrderDetailInput struct {
 	DishID      uint   `json:"dishId" binding:"required" example:"1"`
 	Quantity    uint   `json:"quantity" binding:"required" example:"2"`
-	DiscountIDs []uint `json:"discountIds" binding:"required" example:"1,2"`
+	DiscountIDs []uint `json:"discountIds" example:"1,2"`
 }
 
 type OrderDetailResponse struct {
 	ID              uint      `json:"id"`
 	Quantity        uint      `json:"quantity"`
+	Step            uint      `json:"step"`
 	DiscountPercent float64   `json:"discountPercent"`
 	DishID          uint      `json:"dishId"`
 	DishName        string    `json:"dishName"`
@@ -34,12 +40,20 @@ type OrderDetailResponse struct {
 	UpdatedAt       time.Time `json:"updatedAt"`
 }
 
+type OrderStatus string
+
+const (
+	StatusInProgress OrderStatus = "InProgress"
+	StatusComplete   OrderStatus = "Complete"
+	StatusCancel     OrderStatus = "Cancel"
+)
+
 type OrderResponse struct {
-	ID        uint      `json:"id"`
-	TableId   uint      `json:"tableId"`
-	Status    uint      `json:"status"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	ID        uint        `json:"id"`
+	TableId   uint        `json:"tableId"`
+	Status    OrderStatus `json:"status"`
+	CreatedAt time.Time   `json:"createdAt"`
+	UpdatedAt time.Time   `json:"updatedAt"`
 
 	OrderDetails []OrderDetailResponse `json:"orderDetails"`
 }
@@ -67,7 +81,6 @@ func GetOrders(restaurantId, tableId string) []OrderResponse {
 		orderResponse := OrderResponse{
 			ID:        order.ID,
 			TableId:   order.TableID,
-			Status:    order.Status,
 			CreatedAt: order.CreatedAt,
 			UpdatedAt: order.UpdatedAt,
 		}
@@ -76,6 +89,7 @@ func GetOrders(restaurantId, tableId string) []OrderResponse {
 			detailResponse := OrderDetailResponse{
 				ID:              detail.ID,
 				Quantity:        detail.Quantity,
+				Step:            detail.Step,
 				DiscountPercent: detail.DiscountPercent,
 				DishID:          detail.DishID,
 				DishName:        detail.Dish.Name,
@@ -93,39 +107,51 @@ func GetOrders(restaurantId, tableId string) []OrderResponse {
 	return orderResponses
 }
 
-func CreateOrder(createOrder CreateOrderInput) (Order, error) {
+func CreateOrder(createOrder CreateOrderInput) (OrderResponse, error) {
+	existOrderIdInProgress := GetOrderIdAtTable(strconv.FormatUint(uint64(createOrder.TableID), 10))
+
 	tx := DB.Begin()
 
 	if tx.Error != nil {
-		return Order{}, tx.Error
+		return OrderResponse{}, tx.Error
 	}
 
-	order := Order{
-		TableID: createOrder.TableID,
-	}
+	var orderId uint
 
-	if err := tx.Create(&order).Error; err != nil {
-		tx.Rollback()
-		return Order{}, err
+	if existOrderIdInProgress == nil {
+		order := Order{
+			TableID: createOrder.TableID,
+		}
+
+		if err := tx.Create(&order).Error; err != nil {
+			tx.Rollback()
+			return OrderResponse{}, err
+		}
+
+		orderId = order.ID
+	} else {
+		orderId = *existOrderIdInProgress
 	}
 
 	for _, detail := range createOrder.OrderDetails {
 		orderDetail := OrderDetail{
-			OrderID:  order.ID,
+			OrderID:  orderId,
 			DishID:   detail.DishID,
 			Quantity: detail.Quantity,
 		}
 
 		if err := tx.Create(&orderDetail).Error; err != nil {
 			tx.Rollback()
-			return Order{}, err
+			return OrderResponse{}, err
 		}
 	}
 
 	if err := tx.Commit().Error; err != nil {
 		tx.Rollback()
-		return Order{}, err
+		return OrderResponse{}, err
 	}
+
+	order, _ := GetOrder(strconv.FormatUint(uint64(orderId), 10))
 
 	return order, nil
 }
@@ -135,7 +161,7 @@ func GetOrder(id string) (OrderResponse, error) {
 
 	if err := DB.
 		Preload("OrderDetails", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, order_id, quantity, dish_id, discount_percent, created_at, updated_at")
+			return db.Select("id, order_id, quantity, step, dish_id, discount_percent, created_at, updated_at")
 		}).
 		Preload("OrderDetails.Dish", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id, name, price")
@@ -157,6 +183,7 @@ func GetOrder(id string) (OrderResponse, error) {
 		detailResponse := OrderDetailResponse{
 			ID:              detail.ID,
 			Quantity:        detail.Quantity,
+			Step:            detail.Step,
 			DiscountPercent: detail.DiscountPercent,
 			DishID:          detail.DishID,
 			DishName:        detail.Dish.Name,
@@ -229,6 +256,26 @@ func DeleteOrder(id string, restaurantId uuid.UUID) error {
 	}
 
 	if err := DB.Delete(&order, id).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UpdateOrderDetailStep(restaurantId uuid.UUID, orderDetailId string, step uint) error {
+	var orderDetail OrderDetail
+
+	if err := DB.
+		Joins("JOIN orders ON orders.id = order_details.order_id").
+		Joins("JOIN tables ON tables.id = orders.table_id").
+		Where("tables.restaurant_id = ?", restaurantId).
+		First(&orderDetail, orderDetailId).Error; err != nil {
+		return err
+	}
+
+	orderDetail.Step = step
+
+	if err := DB.Save(&orderDetail).Error; err != nil {
 		return err
 	}
 

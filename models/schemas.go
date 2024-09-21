@@ -20,6 +20,7 @@ func Migrate() {
 		&Table{},
 		&Order{},
 		&OrderDetail{},
+		&OrderStep{},
 	)
 }
 
@@ -40,6 +41,7 @@ type Restaurant struct {
 	Avatar   string    `json:"avatar"`
 
 	DishGroup []DishGroup `json:"dishGroups" gorm:"foreignKey:RestaurantID;references:ID;constraint:OnDelete:CASCADE"`
+	Steps     []OrderStep `json:"steps" gorm:"foreignKey:RestaurantID;references:ID;constraint:OnDelete:CASCADE"`
 }
 
 type File struct {
@@ -108,9 +110,9 @@ type Table struct {
 
 type Order struct {
 	Model
-	TableID uint  `json:"tableId" gorm:"index;" binding:"required"`
-	Status  uint  `json:"status" gorm:"type:TINYINT;not null;default:0"` // 0,1,2,3
-	Table   Table `json:"-" gorm:"foreignKey:TableID;references:ID;constraint:OnDelete:SET NULL"`
+	TableID uint        `json:"tableId" gorm:"index;" binding:"required"`
+	Status  OrderStatus `json:"status" gorm:"not null;default:'InProgress'"`
+	Table   Table       `json:"-" gorm:"foreignKey:TableID;references:ID;constraint:OnDelete:SET NULL"`
 
 	OrderDetails []OrderDetail `json:"orderDetails" gorm:"foreignKey:OrderID;references:ID;constraint:OnDelete:CASCADE"`
 }
@@ -120,9 +122,18 @@ type OrderDetail struct {
 	OrderID         uint    `json:"orderId" gorm:"index;not null" binding:"required"`
 	DishID          uint    `json:"dishId" gorm:"index;not null" binding:"required"`
 	Quantity        uint    `json:"quantity" gorm:"not null" binding:"required"`
+	Step            uint    `json:"step" gorm:"type:TINYINT;not null;default:0"`                  // 0,1,2,3
 	DiscountPercent float64 `json:"discountPercent" gorm:"not null;default 0" binding:"required"` // value of current discount
 	Order           Order   `json:"-" gorm:"foreignKey:OrderID;references:ID;constraint:OnDelete:CASCADE"`
 	Dish            Dish    `json:"dish" gorm:"foreignKey:DishID;references:ID;constraint:OnDelete:CASCADE"`
+}
+
+type OrderStep struct {
+	Model
+	RestaurantID uuid.UUID  `json:"restaurantId" gorm:"index;type:char(36);not null"`
+	Name         string     `json:"name" gorm:"not null" binding:"required"`
+	Step         uint       `json:"step" gorm:"not null" binding:"required"`
+	Restaurant   Restaurant `json:"-" gorm:"foreignKey:RestaurantID;references:ID;constraint:OnDelete:CASCADE"`
 }
 
 // apply only create

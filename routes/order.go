@@ -18,5 +18,6 @@ func addOrderRoutes(r *gin.RouterGroup) {
 		group.GET("", controllers.GetOrders)
 		group.PATCH("/:id", controllers.UpdateOrder)
 		group.DELETE("/:id", controllers.DeleteOrder)
+		group.PATCH("/order-details/:id", controllers.UpdateOrderDetailStep)
 	}
 }
