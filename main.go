@@ -29,7 +29,7 @@ import (
 
 func configSwaggerHost() string {
 	if os.Getenv("MODE") == "release" {
-		return "34.126.68.84:5000"
+		return "34.143.212.216:5000"
 	}
 	return "localhost:5000"
 }
