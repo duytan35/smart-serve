@@ -27,13 +27,6 @@ import (
 // @in header
 // @name Authorization
 
-func configSwaggerHost() string {
-	if os.Getenv("MODE") == "release" {
-		return "34.143.212.216:5000"
-	}
-	return "localhost:5000"
-}
-
 func configApp(r *gin.Engine) {
 	models.ConnectDB()
 	models.Migrate()
@@ -52,7 +45,7 @@ func configApp(r *gin.Engine) {
 
 	r.Use(cors.New(config))
 
-	docs.SwaggerInfo.Host = configSwaggerHost()
+	docs.SwaggerInfo.Host = os.Getenv("SERVER_URL")
 
 	routes.Config(r)
 }
