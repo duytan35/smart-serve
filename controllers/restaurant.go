@@ -123,7 +123,7 @@ func UpdateSteps(c *gin.Context) {
 		})
 	}
 
-	if err := models.CreateOrderSteps(newSteps); err != nil {
+	if err := models.CreateOrderSteps(newSteps, nil); err != nil {
 		c.JSON(http.StatusInternalServerError, Response{
 			Success: false,
 			Message: err.Error(),

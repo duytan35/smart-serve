@@ -63,7 +63,7 @@ func CreateRestaurant(restaurant Restaurant) (Restaurant, error) {
 			{Step: 3, Name: "Done", RestaurantID: restaurant.ID},
 		}
 
-		if err := CreateOrderSteps(defaultSteps); err != nil {
+		if err := CreateOrderSteps(defaultSteps, tx); err != nil {
 			return err
 		}
 
@@ -135,8 +135,12 @@ func RemoveAllOrderSteps(restaurantId string) error {
 	return DB.Where("restaurant_id = ?", restaurantId).Delete(&OrderStep{}).Error
 }
 
-func CreateOrderSteps(steps []OrderStep) error {
-	if err := DB.Create(&steps).Error; err != nil {
+func CreateOrderSteps(steps []OrderStep, tx *gorm.DB) error {
+	if tx == nil {
+		tx = DB
+	}
+
+	if err := tx.Create(&steps).Error; err != nil {
 		return err
 	}
 
