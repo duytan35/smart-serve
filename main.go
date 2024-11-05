@@ -31,6 +31,7 @@ func configApp(r *gin.Engine) {
 	models.ConnectDB()
 	models.Migrate()
 	utils.InitS3Uploader()
+	utils.InitWebSocketServer(r)
 
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		if err := validators.RegisterCustomValidations(v); err != nil {

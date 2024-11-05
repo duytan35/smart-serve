@@ -262,22 +262,23 @@ func DeleteOrder(id string, restaurantId uuid.UUID) error {
 	return nil
 }
 
-func UpdateOrderDetailStep(restaurantId uuid.UUID, orderDetailId string, step uint) error {
+func UpdateOrderDetailStep(restaurantId uuid.UUID, orderDetailId string, step uint) (OrderDetail, error) {
 	var orderDetail OrderDetail
 
 	if err := DB.
 		Joins("JOIN orders ON orders.id = order_details.order_id").
 		Joins("JOIN tables ON tables.id = orders.table_id").
+		Preload("Order").
 		Where("tables.restaurant_id = ?", restaurantId).
 		First(&orderDetail, orderDetailId).Error; err != nil {
-		return err
+		return OrderDetail{}, err
 	}
 
 	orderDetail.Step = step
 
 	if err := DB.Save(&orderDetail).Error; err != nil {
-		return err
+		return OrderDetail{}, err
 	}
 
-	return nil
+	return orderDetail, nil
 }
