@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"smart-serve/models"
+	"smart-serve/utils"
 	"strconv"
 
 	"net/http"
@@ -188,13 +189,19 @@ func UpdateOrderDetailStep(c *gin.Context) {
 		return
 	}
 
-	if err := models.UpdateOrderDetailStep(restaurantId, orderDetailId, updateOrderStepInput.Step); err != nil {
+	orderDetail, err := models.UpdateOrderDetailStep(restaurantId, orderDetailId, updateOrderStepInput.Step)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, Response{
 			Success: false,
 			Message: err.Error(),
 		})
 		return
 	}
+
+	utils.SendMessageToRoom(fmt.Sprintf("%s_%s", restaurantId.String(), strconv.Itoa(int(orderDetail.Order.TableID))), utils.SocketMessage{
+		Event: "ORDER_UPDATED",
+		Data:  orderDetail,
+	})
 
 	c.JSON(http.StatusOK, Response{
 		Success: true,
