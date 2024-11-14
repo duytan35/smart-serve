@@ -40,9 +40,8 @@ func configApp(r *gin.Engine) {
 	}
 
 	config := cors.DefaultConfig()
-	config.AllowCredentials = true
-	config.AllowWildcard = true
-	config.AllowOrigins = []string{"http://*", "https://*"}
+	config.AllowAllOrigins = true
+	config.AllowHeaders = []string{"Origin", "Content-Type", "User-Agent", "Authorization", "Accept", "Cache-Control", "Pragma"}
 
 	r.Use(cors.New(config))
 
