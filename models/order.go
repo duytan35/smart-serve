@@ -81,6 +81,7 @@ func GetOrders(restaurantId, tableId string) []OrderResponse {
 		orderResponse := OrderResponse{
 			ID:        order.ID,
 			TableId:   order.TableID,
+			Status:    order.Status,
 			CreatedAt: order.CreatedAt,
 			UpdatedAt: order.UpdatedAt,
 		}
