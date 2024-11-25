@@ -64,7 +64,7 @@ func GetOrders(restaurantId, tableId string) []OrderResponse {
 
 	query := DB.
 		Preload("OrderDetails", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, order_id, quantity, dish_id, discount_percent, created_at, updated_at")
+			return db.Select("id, order_id, quantity, step, dish_id, discount_percent, created_at, updated_at")
 		}).
 		Preload("OrderDetails.Dish", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id, name, price")
