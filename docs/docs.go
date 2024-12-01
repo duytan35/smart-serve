@@ -248,6 +248,13 @@ const docTemplate = `{
                         "name": "restaurantId",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "table ID",
+                        "name": "tableId",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1932,6 +1939,12 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "imageIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "name": {
                     "type": "string"
                 },
@@ -1977,13 +1990,18 @@ const docTemplate = `{
                 },
                 "restaurantName": {
                     "type": "string"
+                },
+                "steps": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.OrderStep"
+                    }
                 }
             }
         },
         "models.OrderDetailInput": {
             "type": "object",
             "required": [
-                "discountIds",
                 "dishId",
                 "quantity"
             ],

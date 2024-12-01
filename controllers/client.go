@@ -13,16 +13,19 @@ import (
 // @Accept  json
 // @Produce  json
 // @Param restaurantId query string true "Restaurant ID"
+// @Param tableId query string true "table ID"
 // @Success 200 {object} Response{data=models.MenuResponse}
 // @Router /client/menu [get]
 func GetMenu(c *gin.Context) {
 	restaurantId := c.Query("restaurantId")
+	tableId := c.Query("tableId")
 
-	_, err := models.GetRestaurant(restaurantId)
-	if err != nil {
+	checkTable := models.CheckTableExist(tableId, restaurantId)
+
+	if !checkTable {
 		c.JSON(http.StatusNotFound, Response{
 			Success: false,
-			Message: "Restaurant not found",
+			Message: "Restaurant or table not found",
 		})
 		return
 	}

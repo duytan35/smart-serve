@@ -72,3 +72,12 @@ func DeleteTable(id string, restaurantId uuid.UUID) error {
 
 	return nil
 }
+
+func CheckTableExist(tableId string, restaurantId string) bool {
+	var table Table
+	if err := DB.Where("id = ? AND restaurant_id = ?", tableId, restaurantId).First(&table).Error; err != nil {
+		return false
+	}
+
+	return true
+}
