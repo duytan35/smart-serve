@@ -119,13 +119,15 @@ type Order struct {
 
 type OrderDetail struct {
 	Model
-	OrderID         uint    `json:"orderId" gorm:"index;not null" binding:"required"`
-	DishID          uint    `json:"dishId" gorm:"index;not null" binding:"required"`
-	Quantity        uint    `json:"quantity" gorm:"not null" binding:"required"`
-	Step            uint    `json:"step" gorm:"type:TINYINT;not null;default:0"`                  // 0,1,2,3
-	DiscountPercent float64 `json:"discountPercent" gorm:"not null;default 0" binding:"required"` // value of current discount
-	Order           Order   `json:"-" gorm:"foreignKey:OrderID;references:ID;constraint:OnDelete:CASCADE"`
-	Dish            Dish    `json:"dish" gorm:"foreignKey:DishID;references:ID;constraint:OnDelete:CASCADE"`
+	OrderID          uint    `json:"orderId" gorm:"index;not null" binding:"required"`
+	DishID           uint    `json:"dishId" gorm:"index;not null" binding:"required"`
+	Quantity         uint    `json:"quantity" gorm:"not null" binding:"required"`
+	Step             uint    `json:"step" gorm:"type:TINYINT;not null;default:0"`                  // 0,1,2,3
+	DiscountPercent  float64 `json:"discountPercent" gorm:"not null;default 0" binding:"required"` // value of current discount
+	Order            Order   `json:"-" gorm:"foreignKey:OrderID;references:ID;constraint:OnDelete:CASCADE"`
+	Dish             Dish    `json:"dish" gorm:"foreignKey:DishID;references:ID;constraint:OnDelete:CASCADE"`
+	Note             string  `json:"note"`
+	GroupOrderNumber uint    `json:"groupOrderNumber" gorm:"not null;default:1" binding:"required"`
 }
 
 type OrderStep struct {
