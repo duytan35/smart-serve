@@ -204,6 +204,10 @@ definitions:
         type: string
       id:
         type: integer
+      imageIds:
+        items:
+          type: string
+        type: array
       name:
         type: string
       price:
@@ -237,6 +241,10 @@ definitions:
         type: string
       restaurantName:
         type: string
+      steps:
+        items:
+          $ref: '#/definitions/models.OrderStep'
+        type: array
     type: object
   models.OrderDetailInput:
     properties:
@@ -254,7 +262,6 @@ definitions:
         example: 2
         type: integer
     required:
-    - discountIds
     - dishId
     - quantity
     type: object
@@ -574,6 +581,11 @@ paths:
       - description: Restaurant ID
         in: query
         name: restaurantId
+        required: true
+        type: string
+      - description: table ID
+        in: query
+        name: tableId
         required: true
         type: string
       produces:

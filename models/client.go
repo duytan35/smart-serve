@@ -12,6 +12,8 @@ type MenuResponse struct {
 	RestaurantAddress string    `json:"restaurantAddress"`
 	RestaurantAvatar  string    `json:"restaurantAvatar"`
 
+	Steps []OrderStep `json:"steps"`
+
 	Menu []MenuDishGroup `json:"menu"`
 }
 
@@ -23,17 +25,20 @@ type MenuDishGroup struct {
 }
 
 type MenuDish struct {
-	ID          uint    `json:"id"`
-	Name        string  `json:"name" gorm:"not null" binding:"required"`
-	Description string  `json:"description"` // optional
-	Price       float64 `json:"price" gorm:"not null" binding:"required"`
+	ID          uint        `json:"id"`
+	Name        string      `json:"name" gorm:"not null" binding:"required"`
+	Description string      `json:"description"` // optional
+	Price       float64     `json:"price" gorm:"not null" binding:"required"`
+	ImageIds    []uuid.UUID `json:"imageIds"`
 }
 
 func GetMenu(restaurantId string) MenuResponse {
 	var restaurant Restaurant
 	DB.
+		Preload("Steps").
 		Preload("DishGroup").
 		Preload("DishGroup.Dishes").
+		Preload("DishGroup.Dishes.Images").
 		Where("id = ?", restaurantId).First(&restaurant)
 
 	var menu []MenuDishGroup
@@ -47,6 +52,7 @@ func GetMenu(restaurantId string) MenuResponse {
 				Name:        dish.Name,
 				Description: dish.Description,
 				Price:       dish.Price,
+				ImageIds:    dish.ImageIds,
 			})
 		}
 
@@ -62,6 +68,7 @@ func GetMenu(restaurantId string) MenuResponse {
 		RestaurantName:    restaurant.Name,
 		RestaurantAddress: restaurant.Address,
 		RestaurantAvatar:  restaurant.Avatar,
+		Steps:             restaurant.Steps,
 		Menu:              menu,
 	}
 

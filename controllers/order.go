@@ -189,7 +189,7 @@ func UpdateOrderDetailStep(c *gin.Context) {
 		return
 	}
 
-	orderDetail, err := models.UpdateOrderDetailStep(restaurantId, orderDetailId, updateOrderStepInput.Step)
+	orderDetail, err := models.UpdateOrderDetailStep(restaurantId, orderDetailId, *updateOrderStepInput.Step)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, Response{
 			Success: false,

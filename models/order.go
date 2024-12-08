@@ -19,25 +19,30 @@ type UpdateOrderInput struct {
 }
 
 type UpdateOrderStepInput struct {
-	Step uint `json:"step" example:"1" binding:"required"`
+	Step *uint `json:"step" example:"1" binding:"required"`
 }
 
 type OrderDetailInput struct {
 	DishID      uint   `json:"dishId" binding:"required" example:"1"`
 	Quantity    uint   `json:"quantity" binding:"required" example:"2"`
 	DiscountIDs []uint `json:"discountIds" example:"1,2"`
+	Note        string `json:"note" example:"Note"`
 }
 
 type OrderDetailResponse struct {
-	ID              uint      `json:"id"`
-	Quantity        uint      `json:"quantity"`
-	Step            uint      `json:"step"`
-	DiscountPercent float64   `json:"discountPercent"`
-	DishID          uint      `json:"dishId"`
-	DishName        string    `json:"dishName"`
-	DishPrice       float64   `json:"dishPrice"`
-	CreatedAt       time.Time `json:"createdAt"`
-	UpdatedAt       time.Time `json:"updatedAt"`
+	ID               uint        `json:"id"`
+	Quantity         uint        `json:"quantity"`
+	Step             uint        `json:"step"`
+	DiscountPercent  float64     `json:"discountPercent"`
+	DishID           uint        `json:"dishId"`
+	DishName         string      `json:"dishName"`
+	DishPrice        float64     `json:"dishPrice"`
+	DishDescription  string      `json:"dishDescription"`
+	Note             string      `json:"note"`
+	GroupOrderNumber uint        `json:"groupOrderNumber"`
+	ImageIds         []uuid.UUID `json:"imageIds"`
+	CreatedAt        time.Time   `json:"createdAt"`
+	UpdatedAt        time.Time   `json:"updatedAt"`
 }
 
 type OrderStatus string
@@ -64,10 +69,10 @@ func GetOrders(restaurantId, tableId string) []OrderResponse {
 
 	query := DB.
 		Preload("OrderDetails", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, order_id, quantity, step, dish_id, discount_percent, created_at, updated_at")
+			return db.Select("id, order_id, quantity, step, dish_id, discount_percent, note, group_order_number, created_at, updated_at")
 		}).
 		Preload("OrderDetails.Dish", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, name, price")
+			return db.Select("id, name, price, description")
 		}).
 		Joins("JOIN tables ON tables.id = orders.table_id").
 		Where("tables.restaurant_id = ?", restaurantId)
@@ -88,15 +93,18 @@ func GetOrders(restaurantId, tableId string) []OrderResponse {
 
 		for _, detail := range order.OrderDetails {
 			detailResponse := OrderDetailResponse{
-				ID:              detail.ID,
-				Quantity:        detail.Quantity,
-				Step:            detail.Step,
-				DiscountPercent: detail.DiscountPercent,
-				DishID:          detail.DishID,
-				DishName:        detail.Dish.Name,
-				DishPrice:       detail.Dish.Price,
-				CreatedAt:       detail.CreatedAt,
-				UpdatedAt:       detail.UpdatedAt,
+				ID:               detail.ID,
+				Quantity:         detail.Quantity,
+				Step:             detail.Step,
+				DiscountPercent:  detail.DiscountPercent,
+				DishID:           detail.DishID,
+				DishName:         detail.Dish.Name,
+				DishPrice:        detail.Dish.Price,
+				DishDescription:  detail.Dish.Description,
+				Note:             detail.Note,
+				GroupOrderNumber: detail.GroupOrderNumber,
+				CreatedAt:        detail.CreatedAt,
+				UpdatedAt:        detail.UpdatedAt,
 			}
 
 			orderResponse.OrderDetails = append(orderResponse.OrderDetails, detailResponse)
@@ -118,6 +126,7 @@ func CreateOrder(createOrder CreateOrderInput) (OrderResponse, error) {
 	}
 
 	var orderId uint
+	maxGroupOrderNumber := uint(0)
 
 	if existOrderIdInProgress == nil {
 		order := Order{
@@ -132,13 +141,16 @@ func CreateOrder(createOrder CreateOrderInput) (OrderResponse, error) {
 		orderId = order.ID
 	} else {
 		orderId = *existOrderIdInProgress
+		maxGroupOrderNumber = GetMaxGroupOrderNumber(orderId)
 	}
 
 	for _, detail := range createOrder.OrderDetails {
 		orderDetail := OrderDetail{
-			OrderID:  orderId,
-			DishID:   detail.DishID,
-			Quantity: detail.Quantity,
+			OrderID:          orderId,
+			DishID:           detail.DishID,
+			Quantity:         detail.Quantity,
+			Note:             detail.Note,
+			GroupOrderNumber: maxGroupOrderNumber + 1,
 		}
 
 		if err := tx.Create(&orderDetail).Error; err != nil {
@@ -162,11 +174,12 @@ func GetOrder(id string) (OrderResponse, error) {
 
 	if err := DB.
 		Preload("OrderDetails", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, order_id, quantity, step, dish_id, discount_percent, created_at, updated_at")
+			return db.Select("id, order_id, quantity, step, dish_id, discount_percent, note, group_order_number, created_at, updated_at")
 		}).
 		Preload("OrderDetails.Dish", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, name, price")
+			return db.Select("id, name, price, description")
 		}).
+		Preload("OrderDetails.Dish.Images").
 		Where("orders.id = ?", id).
 		First(&order).Error; err != nil {
 		return OrderResponse{}, err
@@ -182,15 +195,19 @@ func GetOrder(id string) (OrderResponse, error) {
 
 	for _, detail := range order.OrderDetails {
 		detailResponse := OrderDetailResponse{
-			ID:              detail.ID,
-			Quantity:        detail.Quantity,
-			Step:            detail.Step,
-			DiscountPercent: detail.DiscountPercent,
-			DishID:          detail.DishID,
-			DishName:        detail.Dish.Name,
-			DishPrice:       detail.Dish.Price,
-			CreatedAt:       detail.CreatedAt,
-			UpdatedAt:       detail.UpdatedAt,
+			ID:               detail.ID,
+			Quantity:         detail.Quantity,
+			Step:             detail.Step,
+			DiscountPercent:  detail.DiscountPercent,
+			DishID:           detail.DishID,
+			DishName:         detail.Dish.Name,
+			DishPrice:        detail.Dish.Price,
+			DishDescription:  detail.Dish.Description,
+			Note:             detail.Note,
+			GroupOrderNumber: detail.GroupOrderNumber,
+			ImageIds:         detail.Dish.ImageIds,
+			CreatedAt:        detail.CreatedAt,
+			UpdatedAt:        detail.UpdatedAt,
 		}
 
 		orderResponse.OrderDetails = append(orderResponse.OrderDetails, detailResponse)
@@ -282,4 +299,11 @@ func UpdateOrderDetailStep(restaurantId uuid.UUID, orderDetailId string, step ui
 	}
 
 	return orderDetail, nil
+}
+
+func GetMaxGroupOrderNumber(orderId uint) uint {
+	var orderDetail OrderDetail
+	DB.Where("order_id = ?", orderId).Order("group_order_number desc").First(&orderDetail)
+
+	return orderDetail.GroupOrderNumber
 }
