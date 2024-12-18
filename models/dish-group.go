@@ -23,6 +23,7 @@ func GetDishGroups(restaurantId string) []DishGroup {
 	var dishGroups []DishGroup
 	DB.
 		Preload("Dishes").
+		Preload("Dishes.Images").
 		Where("restaurant_id = ?", restaurantId).Find(&dishGroups)
 
 	return dishGroups
@@ -55,7 +56,7 @@ func UpdateDishGroup(id string, restaurantId uuid.UUID, dishGroup DishGroupInput
 
 func GetDishGroup(id string) (DishGroup, error) {
 	var dishGroup DishGroup
-	if err := DB.Preload("Dishes").Where("id = ?", id).First(&dishGroup).Error; err != nil {
+	if err := DB.Preload("Dishes").Preload("Dishes.Images").Where("id = ?", id).First(&dishGroup).Error; err != nil {
 		return DishGroup{}, err
 	}
 

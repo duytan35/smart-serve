@@ -996,6 +996,12 @@ const docTemplate = `{
                         "description": "Table ID",
                         "name": "tableId",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Status",
+                        "name": "status",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2020,6 +2026,10 @@ const docTemplate = `{
                     "type": "integer",
                     "example": 1
                 },
+                "note": {
+                    "type": "string",
+                    "example": "Note"
+                },
                 "quantity": {
                     "type": "integer",
                     "example": 2
@@ -2035,6 +2045,9 @@ const docTemplate = `{
                 "discountPercent": {
                     "type": "number"
                 },
+                "dishDescription": {
+                    "type": "string"
+                },
                 "dishId": {
                     "type": "integer"
                 },
@@ -2044,8 +2057,20 @@ const docTemplate = `{
                 "dishPrice": {
                     "type": "number"
                 },
+                "groupOrderNumber": {
+                    "type": "integer"
+                },
                 "id": {
                     "type": "integer"
+                },
+                "imageIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "note": {
+                    "type": "string"
                 },
                 "quantity": {
                     "type": "integer"

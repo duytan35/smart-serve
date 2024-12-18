@@ -993,6 +993,12 @@
                         "description": "Table ID",
                         "name": "tableId",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Status",
+                        "name": "status",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2017,6 +2023,10 @@
                     "type": "integer",
                     "example": 1
                 },
+                "note": {
+                    "type": "string",
+                    "example": "Note"
+                },
                 "quantity": {
                     "type": "integer",
                     "example": 2
@@ -2032,6 +2042,9 @@
                 "discountPercent": {
                     "type": "number"
                 },
+                "dishDescription": {
+                    "type": "string"
+                },
                 "dishId": {
                     "type": "integer"
                 },
@@ -2041,8 +2054,20 @@
                 "dishPrice": {
                     "type": "number"
                 },
+                "groupOrderNumber": {
+                    "type": "integer"
+                },
                 "id": {
                     "type": "integer"
+                },
+                "imageIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "note": {
+                    "type": "string"
                 },
                 "quantity": {
                     "type": "integer"
