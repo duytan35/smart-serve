@@ -63,7 +63,7 @@ type OrderResponse struct {
 	OrderDetails []OrderDetailResponse `json:"orderDetails"`
 }
 
-func GetOrders(restaurantId, tableId string) []OrderResponse {
+func GetOrders(restaurantId, tableId string, status string) []OrderResponse {
 	var orders []Order
 	var orderResponses = []OrderResponse{}
 
@@ -78,6 +78,9 @@ func GetOrders(restaurantId, tableId string) []OrderResponse {
 		Where("tables.restaurant_id = ?", restaurantId)
 	if tableId != "" {
 		query = query.Where("table_id = ?", tableId)
+	}
+	if status != "" {
+		query = query.Where("status = ?", status)
 	}
 
 	query.Find(&orders)

@@ -258,6 +258,9 @@ definitions:
       dishId:
         example: 1
         type: integer
+      note:
+        example: Note
+        type: string
       quantity:
         example: 2
         type: integer
@@ -271,14 +274,24 @@ definitions:
         type: string
       discountPercent:
         type: number
+      dishDescription:
+        type: string
       dishId:
         type: integer
       dishName:
         type: string
       dishPrice:
         type: number
+      groupOrderNumber:
+        type: integer
       id:
         type: integer
+      imageIds:
+        items:
+          type: string
+        type: array
+      note:
+        type: string
       quantity:
         type: integer
       step:
@@ -1000,6 +1013,10 @@ paths:
       - description: Table ID
         in: query
         name: tableId
+        type: string
+      - description: Status
+        in: query
+        name: status
         type: string
       produces:
       - application/json

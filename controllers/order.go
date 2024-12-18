@@ -30,7 +30,7 @@ func CreateOrder(c *gin.Context) {
 		return
 	}
 
-	_, err := models.GetTableById(fmt.Sprintf("%d", createOrder.TableID))
+	table, err := models.GetTableById(fmt.Sprintf("%d", createOrder.TableID))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, Response{
 			Success: false,
@@ -50,6 +50,11 @@ func CreateOrder(c *gin.Context) {
 
 	newOrder, _ := models.GetOrder(strconv.FormatUint(uint64(order.ID), 10))
 
+	utils.SendMessageToRoom(table.RestaurantID.String(), utils.SocketMessage{
+		Event: "PLACE_ORDER",
+		Data:  newOrder,
+	})
+
 	c.JSON(http.StatusCreated, Response{
 		Success: true,
 		Message: "Order created successfully",
@@ -61,14 +66,16 @@ func CreateOrder(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param tableId query string false "Table ID"
+// @Param status query string false "Status"
 // @Success 200 {object} Response{data=[]models.OrderResponse}
 // @Router /orders [get]
 // @Security BearerAuth
 func GetOrders(c *gin.Context) {
 	restaurantId := c.GetString("restaurantId")
 	tableId := c.Query("tableId")
+	status := c.Query("status")
 
-	orders := models.GetOrders(restaurantId, tableId)
+	orders := models.GetOrders(restaurantId, tableId, status)
 
 	c.JSON(http.StatusOK, Response{
 		Success: true,

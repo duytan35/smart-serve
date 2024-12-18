@@ -72,7 +72,7 @@ type Dish struct {
 	Status      uint      `json:"status" gorm:"TINYINT;not null;default 1"` // 0: inactive, 1: active
 	DishGroup   DishGroup `json:"-" gorm:"foreignKey:DishGroupID;references:ID;constraint:OnDelete:CASCADE"`
 
-	Images   []DishImage `json:"-" gorm:"foreignKey:DishID;references:ID"`
+	Images   []DishImage `json:"-" gorm:"foreignKey:DishID;references:ID;constraint:OnDelete:CASCADE"`
 	ImageIds []uuid.UUID `json:"imageIds" gorm:"-"`
 }
 

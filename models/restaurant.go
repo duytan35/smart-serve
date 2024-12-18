@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -77,21 +76,18 @@ func CreateRestaurant(restaurant Restaurant) (Restaurant, error) {
 	return restaurant, nil
 }
 
-func UpdateRestaurant(id string, restaurant UpdateRestaurantInput) (Restaurant, error) {
+func UpdateRestaurant(id string, updateRestaurantInput UpdateRestaurantInput) (Restaurant, error) {
 	var updatedRestaurant Restaurant
-	if err := DB.First(&updatedRestaurant, id).Error; err != nil {
+	if err := DB.First(&updatedRestaurant, "id = ?", id).Error; err != nil {
 		return Restaurant{}, err
 	}
 
-	if updatedRestaurant.Password != "" {
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(updatedRestaurant.Password), bcrypt.DefaultCost)
-		if err != nil {
-			return Restaurant{}, err
-		}
-		updatedRestaurant.Password = string(hashedPassword)
-	}
+	updatedRestaurant.Name = updateRestaurantInput.Name
+	updatedRestaurant.Phone = updateRestaurantInput.Phone
+	updatedRestaurant.Address = updateRestaurantInput.Address
+	updatedRestaurant.Avatar = updateRestaurantInput.Avatar
 
-	if err := DB.Model(&updatedRestaurant).Updates(restaurant).Error; err != nil {
+	if err := DB.Save(&updatedRestaurant).Error; err != nil {
 		return Restaurant{}, err
 	}
 
